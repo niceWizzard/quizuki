@@ -2,12 +2,12 @@ import React from 'react';
 import {View} from "react-native";
 import {Text} from "react-native-paper";
 
-const TestScreen = () => {
+const QuizCreateScreen = () => {
     return (
         <View>
-            <Text>Test SCreen</Text>
+            <Text>Cerate Screen</Text>
         </View>
     );
 };
 
-export default TestScreen;
+export default QuizCreateScreen;

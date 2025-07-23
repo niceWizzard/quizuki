@@ -1,19 +1,42 @@
-import React from 'react';
 import {View} from "react-native";
-import {Button, Text} from "react-native-paper";
+import {FAB, Text} from "react-native-paper";
+import {useLiveQuery} from "drizzle-orm/expo-sqlite";
+import {useDrizzleStore} from "@/store/useDrizzleStore";
 import {router} from "expo-router";
 
 const IndexScreen = () => {
+    const drizzle = useDrizzleStore(v => v.drizzle!);
+    const {data: fetchedQuizzes} = useLiveQuery(
+        drizzle.query.quizTable.findMany()
+    );
     return (
-        <View style={{flex: 1}}>
-            <Text>Hello World</Text>
-            <Button
-                onPress={() => router.navigate('/test')}
-            >
-                Navigate
-            </Button>
+        <View style={{flex: 1, padding: 8,}}>
+            <FAB
+                icon="plus"
+                style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    right: 0,
+                    margin: 8,
+                }}
+                onPress={() => router.navigate('/quiz/create')}
+            />
+            {
+                fetchedQuizzes.length > 0 ? (
+                    fetchedQuizzes.map((quiz) => (
+                        <View key={quiz.id}>
+                            <Text>{quiz.name}</Text>
+                        </View>
+                    ))
+                ) : (
+                    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                        <Text>No Quiz yet. Add one!</Text>
+                    </View>
+                )
+            }
         </View>
     );
 };
+
 
 export default IndexScreen;

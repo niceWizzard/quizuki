@@ -12,6 +12,12 @@ export default function RootLayout() {
             headerShown: false,
           }}
         />
+        <Stack.Screen
+          name="quiz/create"
+          options={{
+            headerTitle: "Create Quiz",
+          }}
+        />
       </Stack>
     </DrizzleProvider>
   </ReactNativePaperProvider>;
