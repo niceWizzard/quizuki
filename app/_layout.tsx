@@ -1,5 +1,8 @@
 import { Stack } from "expo-router";
+import DrizzleProvider from "@/providers/DrizzleProvider";
 
 export default function RootLayout() {
-  return <Stack />;
+  return <DrizzleProvider>
+    <Stack />
+  </DrizzleProvider>;
 }
