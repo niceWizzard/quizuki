@@ -12,7 +12,7 @@ const TabsLayout = () => {
                     headerTitle: "Quiz",
                     tabBarIcon: ({ color,focused }) => (
                         <View>
-                            <MaterialIcons name="quiz" size={ focused ? 18 : 16} color={color} />
+                            <MaterialIcons name="quiz" size={ focused ? 26 : 24} color={color} />
                         </View>
                     ),
                     tabBarLabel: "Quiz",
@@ -24,7 +24,7 @@ const TabsLayout = () => {
                     headerTitle: "Settings",
                     tabBarIcon: ({ color,focused }) => (
                         <View>
-                            <MaterialIcons name="settings" size={ focused ? 18 : 16} color={color} />
+                            <MaterialIcons name="settings" size={ focused ? 26 : 24} color={color} />
                         </View>
                     ),
                     tabBarLabel: "Settings",
