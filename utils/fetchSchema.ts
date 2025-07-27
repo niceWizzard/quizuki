@@ -82,6 +82,7 @@ export const ApiQuizSchema = z.object({
 });
 
 export const QuizSchema = ApiQuizSchema.transform(v => ({
+    id: v._id,
     name: v.info.name,
     createdBy: v.createdBy.firstName + v.createdBy.lastName,
     createdAt: v.createdAt,
