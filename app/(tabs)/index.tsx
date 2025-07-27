@@ -2,10 +2,10 @@ import { useDrizzleStore } from "@/store/useDrizzleStore";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { View, FlatList } from "react-native";
 import React from "react";
-import {quizTable} from "@/db/schema";
 import QuizItem from "@/components/QuizItem";
 import AddQuizDialog from "@/components/AddQuizDialog";
 import {Text} from "react-native-paper";
+import {router} from "expo-router";
 
 const IndexScreen = () => {
     const drizzle = useDrizzleStore(v => v.drizzle!);
@@ -14,9 +14,9 @@ const IndexScreen = () => {
     );
 
     async function onSubmit(waygroundId : string) {
-        await drizzle.insert(quizTable).values({
-            name: "LJKSDF",
-            waygroundId: waygroundId,
+        router.navigate({
+            pathname: '/quiz/[id]/preview',
+            params: {id: waygroundId}
         });
     }
 
