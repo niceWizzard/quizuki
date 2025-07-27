@@ -12,13 +12,6 @@ export default function RootLayout() {
             headerShown: false,
           }}
         />
-        <Stack.Screen
-          name="quiz/create"
-          options={{
-            headerTitle: "Create Quiz",
-            animation: 'fade_from_bottom',
-          }}
-        />
       </Stack>
     </DrizzleProvider>
   </ReactNativePaperProvider>;
