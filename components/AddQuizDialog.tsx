@@ -1,73 +1,124 @@
-import { View } from "react-native";
-import { Button, Dialog, FAB, Portal, TextInput, useTheme } from "react-native-paper";
+import {View, StyleSheet, KeyboardAvoidingView} from "react-native";
+import { Button, Dialog, FAB, Portal, TextInput, Text, useTheme } from "react-native-paper";
 import React, { useState } from "react";
-import {extractWaygroundQuizId, isValidWaygroundUrl} from "@/utils/url";
+import { useForm, Controller } from "react-hook-form";
+import { extractWaygroundQuizId, isValidWaygroundUrl } from "@/utils/url";
+
+type FormData = {
+    url: string;
+};
 
 const AddQuizDialog = ({ onSubmit }: { onSubmit: (waygroundId: string) => void }) => {
     const theme = useTheme();
     const [dialogVisible, setDialogVisible] = useState(false);
-    const [url, setUrl] = useState('');
 
-    const isValid =  isValidWaygroundUrl(url);
+    const {
+        control,
+        handleSubmit,
+        reset,
+        watch,
+        formState: { errors, isValid }
+    } = useForm<FormData>({
+        mode: "onChange",
+        defaultValues: {
+            url: ''
+        },
+        resolver: async (values) => {
+            const validUrl = isValidWaygroundUrl(values.url);
+            const hasId = !!extractWaygroundQuizId(values.url);
 
-    function handleSubmit() {
-        if (!isValid) return;
+            return {
+                values,
+                errors: {
+                    ...(!values.url && { url: { type: "required", message: "URL is required" } }),
+                    ...(values.url && !validUrl && { url: { type: "pattern", message: "Invalid Wayground URL" } }),
+                    ...(values.url && validUrl && !hasId && { url: { type: "validate", message: "Missing quiz ID" } })
+                }
+            };
+        }
+    });
+
+    const handleFormSubmit = (data: FormData) => {
+        onSubmit(extractWaygroundQuizId(data.url)!);
         onDismiss();
-        onSubmit(extractWaygroundQuizId(url)!);
-    }
+    };
 
-    function onDismiss() {
+    const onDismiss = () => {
         setDialogVisible(false);
-        setUrl('');
-    }
+        reset();
+    };
 
     return (
         <>
             <FAB
                 icon="plus"
-                style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    right: 0,
-                    margin: 8,
-                }}
+                style={styles.fab}
                 onPress={() => setDialogVisible(true)}
             />
             <Portal>
                 <Dialog
                     visible={dialogVisible}
                     onDismiss={onDismiss}
-                    theme={{ colors: { backdrop: 'none' } }}
+                    theme={theme}
                 >
                     <Dialog.Title>Add a Quiz</Dialog.Title>
                     <Dialog.Content>
-                        <View style={{ padding: 8, gap: 8 }}>
-                            <TextInput
-                                style={{ backgroundColor: theme.colors.secondaryContainer }}
-                                label="Wayground Url"
-                                placeholder="wayground.com/quiz/<id>"
-                                mode="outlined"
-                                value={url}
-                                onChangeText={(v) => setUrl(v)}
-                                onSubmitEditing={handleSubmit}
-                                autoFocus
+                        <View style={styles.content}>
+                            <Controller
+                                control={control}
+                                name="url"
+                                render={({ field: { onChange, onBlur, value } }) => (
+                                    <>
+                                        <TextInput
+                                            label="Wayground URL"
+                                            placeholder="wayground.com/quiz/<id>"
+                                            mode="outlined"
+                                            value={value}
+                                            onChangeText={onChange}
+                                            onBlur={onBlur}
+                                            onSubmitEditing={handleSubmit(handleFormSubmit)}
+                                            autoFocus
+                                            autoCapitalize="none"
+                                            autoCorrect={false}
+                                            keyboardType="url"
+                                            error={!!errors.url}
+                                            theme={{
+                                                ...theme,
+                                                colors: {
+                                                    ...theme.colors,
+                                                    error: theme.colors.error,
+                                                    primary: theme.colors.primary
+                                                }
+                                            }}
+                                        />
+                                        {errors.url && (
+                                            <Text
+                                                variant="bodySmall"
+                                                style={{
+                                                    color: theme.colors.error,
+                                                    marginTop: 4,
+                                                    marginLeft: 8
+                                                }}
+                                            >
+                                                {errors.url.message}
+                                            </Text>
+                                        )}
+                                    </>
+                                )}
                             />
                         </View>
                     </Dialog.Content>
                     <Dialog.Actions>
-                        <Button
-                            onPress={() => setDialogVisible(false)}
-                            mode="text"
-                        >
+                        <Button onPress={onDismiss}>
                             Cancel
                         </Button>
                         <Button
-                            onPress={handleSubmit}
                             mode="contained"
-                            style={{ paddingHorizontal: 8 }}
+                            onPress={handleSubmit(handleFormSubmit)}
                             disabled={!isValid}
+                            theme={theme}
                         >
-                            Done
+                            Add Quiz
                         </Button>
                     </Dialog.Actions>
                 </Dialog>
@@ -75,5 +126,17 @@ const AddQuizDialog = ({ onSubmit }: { onSubmit: (waygroundId: string) => void }
         </>
     );
 };
+
+const styles = StyleSheet.create({
+    fab: {
+        position: 'absolute',
+        bottom: 16,
+        right: 16,
+    },
+    content: {
+        paddingVertical: 8,
+        gap: 8,
+    },
+});
 
 export default AddQuizDialog;
