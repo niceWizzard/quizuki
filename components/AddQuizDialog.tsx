@@ -1,13 +1,14 @@
 import { View } from "react-native";
 import { Button, Dialog, FAB, Portal, TextInput, useTheme } from "react-native-paper";
 import React, { useState } from "react";
+import {isValidWaygroundUrl} from "@/utils/url";
 
 const AddQuizDialog = ({ onSubmit }: { onSubmit: (v: string) => void }) => {
     const theme = useTheme();
     const [dialogVisible, setDialogVisible] = useState(false);
     const [url, setUrl] = useState('');
 
-    const isValid = /^(https?:\/\/)?(www\.)?(quizizz\.com|wayground\.com)(\/[^\s]*)?(\?[^\s]*)?(#[^\s]*)?$/.test(url);
+    const isValid =  isValidWaygroundUrl(url);
 
     function handleSubmit() {
         if (!isValid) return;
