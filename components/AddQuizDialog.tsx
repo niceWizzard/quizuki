@@ -1,9 +1,9 @@
 import { View } from "react-native";
 import { Button, Dialog, FAB, Portal, TextInput, useTheme } from "react-native-paper";
 import React, { useState } from "react";
-import {isValidWaygroundUrl} from "@/utils/url";
+import {extractWaygroundQuizId, isValidWaygroundUrl} from "@/utils/url";
 
-const AddQuizDialog = ({ onSubmit }: { onSubmit: (v: string) => void }) => {
+const AddQuizDialog = ({ onSubmit }: { onSubmit: (waygroundId: string) => void }) => {
     const theme = useTheme();
     const [dialogVisible, setDialogVisible] = useState(false);
     const [url, setUrl] = useState('');
@@ -13,7 +13,7 @@ const AddQuizDialog = ({ onSubmit }: { onSubmit: (v: string) => void }) => {
     function handleSubmit() {
         if (!isValid) return;
         onDismiss();
-        onSubmit(url);
+        onSubmit(extractWaygroundQuizId(url)!);
     }
 
     function onDismiss() {

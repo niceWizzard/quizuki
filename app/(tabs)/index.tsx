@@ -13,6 +13,12 @@ const IndexScreen = () => {
         drizzle.query.quizTable.findMany()
     );
 
+    async function onSubmit(waygroundId : string) {
+        await drizzle.insert(quizTable).values({
+            name: "LJKSDF",
+            waygroundId: waygroundId,
+        });
+    }
 
     return (
         <View style={{ flex: 1, padding: 8, }}>
@@ -27,12 +33,7 @@ const IndexScreen = () => {
                 }
             />
             <AddQuizDialog
-                onSubmit={async (url) => {
-                    await drizzle.insert(quizTable).values({
-                        name: "LJKSDF",
-                        waygroundId: url,
-                    });
-                }}
+                onSubmit={onSubmit}
             />
         </View>
     );
