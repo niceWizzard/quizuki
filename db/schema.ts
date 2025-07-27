@@ -5,3 +5,5 @@ export const quizTable = sqliteTable('quizzes', {
    name: text('name', {length: 255}).notNull(),
     waygroundId: text('wayground_id', {length: 255}).notNull(),
 });
+
+export type Quiz = typeof quizTable.$inferSelect;
