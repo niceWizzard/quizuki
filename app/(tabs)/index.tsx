@@ -1,7 +1,6 @@
 import { useDrizzleStore } from "@/store/useDrizzleStore";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
-import { router, useFocusEffect } from "expo-router";
-import { useCallback, useState } from "react";
+import { router } from "expo-router";
 import { View } from "react-native";
 import { FAB, Text } from "react-native-paper";
 
@@ -22,7 +21,6 @@ const IndexScreen = () => {
                 }}
                 onPress={() => router.navigate('/quiz/create')}
             />
-            <Counter/>
             {
                 fetchedQuizzes.length > 0 ? (
                     fetchedQuizzes.map((quiz) => (
@@ -39,22 +37,5 @@ const IndexScreen = () => {
         </View>
     );
 };
-
-const Counter = () => {
-    const [counter, setCounter] = useState(0);
-    useFocusEffect(
-        useCallback(() => {
-            const interval = setInterval(() => {
-                setCounter(prev => prev + 1);
-            }, 1000);
-
-            // Cleanup when screen loses focus
-            return () => clearInterval(interval);
-        }, [])
-    );
-
-    return <Text>Current: {counter}</Text>
-}
-
 
 export default IndexScreen;
