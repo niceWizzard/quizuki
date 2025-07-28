@@ -1,8 +1,14 @@
 import React from 'react';
 import { Card, Text } from 'react-native-paper';
-import { ApiQuizSchema } from '@/utils/fetchSchema';
+import {z} from 'zod';
+import {ApiQuizSchema, QuizSchema} from '@/utils/fetchSchema';
 
-const QuestionCard = ({ question }: { question: ApiQuizSchema['questions'][number] }) => {
+
+type Quiz = z.infer<typeof QuizSchema>;
+
+
+
+const QuestionCard = ({ question }: { question: Quiz["questions"][number] }) => {
     return (
         <Card>
             <Card.Title title={question.structure.query.text} />
