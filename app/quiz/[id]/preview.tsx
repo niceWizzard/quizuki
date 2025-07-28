@@ -1,16 +1,17 @@
-import React from 'react';
-import {ActivityIndicator, FlatList, ScrollView, View} from "react-native";
-import {Card, FAB, Text} from "react-native-paper";
+import React, {useRef, useState} from 'react';
+import {ActivityIndicator, FlatList, NativeScrollEvent, NativeSyntheticEvent, ScrollView, View} from "react-native";
+import {AnimatedFAB, Card, FAB, Text} from "react-native-paper";
 import {router, useLocalSearchParams} from "expo-router";
 import {useQuery} from "@tanstack/react-query";
 import {Image} from "expo-image";
-import {QuizSchema} from "@/utils/fetchSchema";
+import {ApiQuizSchema, QuizSchema} from "@/utils/fetchSchema";
 import {useDrizzleStore} from "@/store/useDrizzleStore";
 import {quizTable} from "@/db/schema";
 
 const PreviewScreen = () => {
     const { id } = useLocalSearchParams();
     const drizzle = useDrizzleStore(v => v.drizzle!);
+    const [scrollY, setScrollY] = useState(0)
 
     const {data, isLoading, error} = useQuery({
         queryKey: ['preview', id],
@@ -48,10 +49,15 @@ const PreviewScreen = () => {
         router.back();
     }
 
+    function handleScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
+        setScrollY(event.nativeEvent.contentOffset.y);
+    }
+
     return (
         <>
             <FlatList
                 data={quiz.questions}
+                onScroll={handleScroll}
                 keyExtractor={(item) => item._id}
                 contentContainerStyle={{ paddingHorizontal: 16, gap: 8, paddingBottom: 32, }}
                 ListHeaderComponent={
@@ -63,6 +69,7 @@ const PreviewScreen = () => {
                                 contentFit="cover"
                             />
                         )}
+                        <Text>{scrollY}</Text>
                         <Text variant="titleLarge">{quiz.name}</Text>
                         <Text variant="bodySmall">{quiz.createdBy}</Text>
                         <Text variant="titleMedium">Questions</Text>
@@ -81,8 +88,10 @@ const PreviewScreen = () => {
                     </Card>
                 )}
             />
-            <FAB
-                label="Save Quiz"
+            <AnimatedFAB
+                label={"Save Quiz"}
+                extended={scrollY <= 80}
+                icon="content-save-outline"
                 style={{
                     position: 'absolute',
                     bottom: 16,
