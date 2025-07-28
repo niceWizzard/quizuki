@@ -12,7 +12,8 @@ const PreviewScreen = () => {
     const { id } = useLocalSearchParams();
     const {colors} = useTheme();
     const drizzle = useDrizzleStore(v => v.drizzle!);
-    const [scrollY, setScrollY] = useState(0)
+    const [scrollY, setScrollY] = useState(0);
+    const [fetchStatus, setFetchStatus] = useState('')
 
     const {data, isLoading, error, refetch} = useQuery({
         queryKey: ['preview', id],
@@ -20,10 +21,12 @@ const PreviewScreen = () => {
               const res = await fetch('https://wayground.com/quiz/'+id, {
                   method: 'GET',
               });
+              setFetchStatus("Fetching...")
               const apiData = (await res.json());
               if(!apiData.success) {
                   throw new Error(apiData.message);
               }
+              setFetchStatus("Parsing...");
 
               const data = await QuizSchema.parseAsync(apiData.data.quiz)
             if(!data)
@@ -45,8 +48,9 @@ const PreviewScreen = () => {
     }
 
     if(isLoading) {
-        return <View style={{flex: 1, justifyContent: 'center'}}>
+        return <View style={{flex: 1, justifyContent: 'center', alignItems: "center"}}>
             <ActivityIndicator size="large"/>
+            <Text>{fetchStatus}</Text>
         </View>
     }
 
