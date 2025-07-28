@@ -34,15 +34,17 @@ const QuestionCardComp = ({ question,index }: { question: Quiz["questions"][numb
         return option === answer;
     }
     const combinedHTML = `
-            <div class="optionsContainer">
-                ${question.structure.options.map((option, idx) => `
-                    <div class="optionItem">
-                        <span class="optionIcon">${isCorrectAnswer(idx, question.structure.answer) ? '✅' : ''}</span>
-                        <span class="optionText">${option.text}</span>
-                    </div>
-                `).join('')}
-            </div>
-        `;
+        <div >
+            ${question.structure.options.map((option, idx) => `
+                <div class="optionItem">
+                    <span class="optionIcon">${isCorrectAnswer(idx, question.structure.answer) ? '✅' : ''}</span>
+                    ${option.media.map((media) => (`<img class="optionImage" src="${media.url}" />`))}
+                    <span class="optionText">${option.text}</span>
+                </div>
+            `).join('')}
+        </div>
+    `;
+
 
 
     return (
@@ -78,25 +80,32 @@ const QuestionCardComp = ({ question,index }: { question: Quiz["questions"][numb
                     source={{ html: combinedHTML }}
                     ignoredDomTags={['math']}
                     contentWidth={width}
+
                     classesStyles={{
-                        optionsContainer: {
-                            flexWrap: 'wrap',
-                            justifyContent: 'space-between',
-                        },
                         optionItem: {
-                            width: '48%',
+                            width: '100%',
                             flexDirection: 'row',
                             alignItems: 'center',
-                            marginVertical: 4,
                         },
                         optionIcon: {
                             width: 24,
                             textAlign: 'center',
+                            marginRight: 8,
+                        },
+                        optionImage: {
+                            flexShrink: 0,
+                            width: 128, // Small thumbnail size or adjust as needed
+                            height: 128,
+                            resizeMode: 'contain',
+                            marginRight: 8,
                         },
                         optionText: {
-                            flexShrink: 1,
-                        }
+                            flex: 1,
+                            flexWrap: 'wrap',
+                        },
                     }}
+
+
                     defaultTextProps={{
                         style: {
                             color: colors.onBackground,
