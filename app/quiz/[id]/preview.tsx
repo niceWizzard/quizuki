@@ -1,10 +1,10 @@
-import React, {useRef, useState} from 'react';
-import {ActivityIndicator, FlatList, NativeScrollEvent, NativeSyntheticEvent, ScrollView, View} from "react-native";
-import {AnimatedFAB, Button, Card, Divider, FAB, IconButton, Menu, Text, useTheme} from "react-native-paper";
+import React, {useState} from 'react';
+import {ActivityIndicator, FlatList, NativeScrollEvent, NativeSyntheticEvent, View} from "react-native";
+import {AnimatedFAB, Button, IconButton, Menu, Text, useTheme} from "react-native-paper";
 import {router, Stack, useLocalSearchParams} from "expo-router";
-import {useQuery, useQueryClient} from "@tanstack/react-query";
+import {useQuery} from "@tanstack/react-query";
 import {Image} from "expo-image";
-import {ApiQuizSchema, QuizSchema} from "@/utils/fetchSchema";
+import {QuizSchema} from "@/utils/fetchSchema";
 import {useDrizzleStore} from "@/store/useDrizzleStore";
 import {quizTable} from "@/db/schema";
 import QuestionCard from "@/components/QuestionCard";

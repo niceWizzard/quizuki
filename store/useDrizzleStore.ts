@@ -29,7 +29,7 @@ interface DrizzleStore {
     success: boolean;
 }
 
-export const useDrizzleStore = create<DrizzleStore>((set) => ({
+export const useDrizzleStore = create<DrizzleStore>(() => ({
     drizzle: null,
     success: false,
 }));

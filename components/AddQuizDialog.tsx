@@ -39,7 +39,6 @@ const AddQuizDialog = ({ onSubmit }: { onSubmit: (waygroundId: string) => void }
         control,
         handleSubmit,
         reset,
-        watch,
         formState: { errors, isValid },
         setValue,
         trigger,
