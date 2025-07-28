@@ -42,6 +42,7 @@ const AddQuizDialog = ({ onSubmit }: { onSubmit: (waygroundId: string) => void }
         watch,
         formState: { errors, isValid },
         setValue,
+        trigger,
     } = useForm<FormData>({
         mode: "onChange",
         defaultValues: {
@@ -75,7 +76,13 @@ const AddQuizDialog = ({ onSubmit }: { onSubmit: (waygroundId: string) => void }
     async function handlePasteClick() {
         const text = await getStringAsync();
         setValue("url", text, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+
+        const isValid = await trigger("url"); // Trigger validation and wait for it
+        if (isValid) {
+            await handleSubmit(handleFormSubmit)(); // Programmatically submit
+        }
     }
+
 
     return (
         <>
