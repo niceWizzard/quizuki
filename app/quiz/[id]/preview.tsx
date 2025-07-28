@@ -56,12 +56,12 @@ const PreviewScreen = () => {
         const [visible, setVisible] = useState(false);
 
         const handleRefresh = async () => {
+            setVisible(false);
             try {
                 await refetch();
             } catch (error) {
                 console.error('Refresh failed:', error);
             }
-            setVisible(false);
         };
         return (
             <Menu
