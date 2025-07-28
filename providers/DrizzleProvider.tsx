@@ -3,7 +3,7 @@ import { openDatabaseAsync } from 'expo-sqlite';
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
 
-export const DATABASE_NAME = 'test';
+export const DATABASE_NAME = 'test1';
 
 const DrizzleProvider = ({ children } : PropsWithChildren) => {
   const [isReady, setIsReady] = useState(false);
