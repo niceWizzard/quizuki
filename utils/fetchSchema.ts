@@ -26,6 +26,10 @@ const BaseStructureSchema = z.object({
     }),
     query: z.object({
         text: z.string(),
+        media: z.array(z.object({
+            type: z.string(),
+            url: z.url(),
+        }))
     }),
     options: z.array(OptionSchema),
 });
