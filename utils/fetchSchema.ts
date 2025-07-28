@@ -1,6 +1,6 @@
-
 import { z } from "zod";
 
+// Base Schemas
 const ApiBaseQuestionSchema = z.object({
     _id: z.string(),
     createdAt: z.string(),
@@ -14,7 +14,7 @@ const OptionSchema = z.object({
     text: z.string(),
     media: z.array(z.object({
         type: z.string(),
-        url: z.url(),
+        url: z.string(),
     })),
 });
 
@@ -28,13 +28,13 @@ const BaseStructureSchema = z.object({
         text: z.string(),
         media: z.array(z.object({
             type: z.string(),
-            url: z.url(),
-        }))
+            url: z.string(),
+        })),
     }),
     options: z.array(OptionSchema),
 });
 
-
+// Question Variants
 const ApiMCQuestionSchema = ApiBaseQuestionSchema.extend({
     structure: BaseStructureSchema.extend({
         answer: z.number(),
@@ -42,9 +42,12 @@ const ApiMCQuestionSchema = ApiBaseQuestionSchema.extend({
     type: z.literal("MCQ"),
 });
 
-const APIBlankQuestionSchema = ApiMCQuestionSchema.extend({
+const APIBlankQuestionSchema = ApiBaseQuestionSchema.extend({
+    structure: BaseStructureSchema.extend({
+        answer: z.number(),
+    }),
     type: z.literal("BLANK"),
-})
+});
 
 const ApiMSQuestionSchema = ApiBaseQuestionSchema.extend({
     structure: BaseStructureSchema.extend({
@@ -53,13 +56,37 @@ const ApiMSQuestionSchema = ApiBaseQuestionSchema.extend({
     type: z.literal("MSQ"),
 });
 
-const ApiQuestionSchema = z.discriminatedUnion("type", [
-   ApiMCQuestionSchema,
-    ApiMSQuestionSchema,
-    APIBlankQuestionSchema
-]);
+const ApiUnsupportedQuestionSchema = ApiBaseQuestionSchema.extend({
+    type: z.literal("Unsupported"),
+    structure: BaseStructureSchema,
+});
 
+// Raw Question Schema (for coercion)
+const RawQuestionSchema = ApiBaseQuestionSchema.extend({
+    structure: BaseStructureSchema.extend({
+        answer: z.any().optional(),
+    }),
+});
 
+// Coerce Unknown Types to Unsupported
+const CoerceToApiQuestionSchema = RawQuestionSchema.transform((data) => {
+    switch (data.type) {
+        case "MCQ":
+            return ApiMCQuestionSchema.parse(data);
+        case "MSQ":
+            return ApiMSQuestionSchema.parse(data);
+        case "BLANK":
+            return APIBlankQuestionSchema.parse(data);
+        default:
+            return ApiUnsupportedQuestionSchema.parse({
+                ...data,
+                type: "Unsupported",
+                structure: { ...data.structure },
+            });
+    }
+});
+
+// Quiz Schema
 export const ApiQuizSchema = z.object({
     deleted: z.boolean(),
     archived: z.boolean(),
@@ -69,7 +96,7 @@ export const ApiQuizSchema = z.object({
         lang: z.string(),
         __v: z.number(),
         _id: z.string(),
-        questions: z.array(ApiQuestionSchema),
+        questions: z.array(CoerceToApiQuestionSchema),
         name: z.string(),
         image: z.string().nullish(),
         createdAt: z.string(),
@@ -85,7 +112,8 @@ export const ApiQuizSchema = z.object({
     updated: z.string(),
 });
 
-export const QuizSchema = ApiQuizSchema.transform(v => ({
+// Transformed Quiz Output
+export const QuizSchema = ApiQuizSchema.transform((v) => ({
     id: v._id,
     name: v.info.name,
     createdBy: v.createdBy.firstName + " " + v.createdBy.lastName,

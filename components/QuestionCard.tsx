@@ -14,7 +14,7 @@ type Quiz = z.infer<typeof QuizSchema>;
 const QuestionCardComp = ({ question,index }: { question: Quiz["questions"][number],index:number }) => {
     const {colors, fonts} = useTheme();
     const {width} = useWindowDimensions();
-    let questionTypeLabel = "Uknown";
+    let questionTypeLabel = "Unsupported";
 
     switch (question.type) {
         case "MSQ":
@@ -27,6 +27,41 @@ const QuestionCardComp = ({ question,index }: { question: Quiz["questions"][numb
             questionTypeLabel = "Identification";
             break;
     }
+
+    if(question.type === "Unsupported") {
+        return <Card>
+            <Card.Content>
+                <Text style={{marginBottom: 8}}>{index+1}. {questionTypeLabel}</Text>
+                {
+                    question.structure.query.media.length  ? (
+                        question.structure.query.media.map(v => (
+                            <Image
+                                key={v.url}
+                                source={{uri: v.url}}
+                                style={{width: "100%", height: 256}}
+                                contentFit="contain"
+                            />
+                        ))
+                    ) : null
+                }
+                <Divider style={{marginVertical: 8}} />
+                <RenderHTML
+                    source={{html: question.structure.query.text.trim().replace(/<p><br\s*\/?><\/p>/gi, '')}}
+                    contentWidth={width}
+                    defaultTextProps={{
+                        style: {
+                            color: colors.onBackground,
+                            fontWeight: fonts.titleMedium.fontWeight,
+                            fontSize: fonts.titleMedium.fontSize,
+                            lineHeight: fonts.titleMedium.lineHeight,
+                        }
+                    }}
+                />
+            </Card.Content>
+        </Card>
+    }
+
+
     function isCorrectAnswer(option : number, answer : number | number[]) : boolean {
         if(Array.isArray(answer)) {
             return answer.includes(option);
@@ -44,8 +79,6 @@ const QuestionCardComp = ({ question,index }: { question: Quiz["questions"][numb
             `).join('')}
         </div>
     `;
-
-
 
     return (
         <Card>
