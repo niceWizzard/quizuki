@@ -1,8 +1,8 @@
 import React, {useRef, useState} from 'react';
 import {ActivityIndicator, FlatList, NativeScrollEvent, NativeSyntheticEvent, ScrollView, View} from "react-native";
-import {AnimatedFAB, Button, Card, FAB, Text, useTheme} from "react-native-paper";
-import {router, useLocalSearchParams} from "expo-router";
-import {useQuery} from "@tanstack/react-query";
+import {AnimatedFAB, Button, Card, Divider, FAB, IconButton, Menu, Text, useTheme} from "react-native-paper";
+import {router, Stack, useLocalSearchParams} from "expo-router";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {Image} from "expo-image";
 import {ApiQuizSchema, QuizSchema} from "@/utils/fetchSchema";
 import {useDrizzleStore} from "@/store/useDrizzleStore";
@@ -15,7 +15,7 @@ const PreviewScreen = () => {
     const [scrollY, setScrollY] = useState(0);
     const [fetchStatus, setFetchStatus] = useState('');
 
-    const { data, isLoading, error, refetch } = useQuery({
+    const { data, isFetching: isLoading, error, refetch } = useQuery({
         queryKey: ['preview', id],
         queryFn: async () => {
             const res = await fetch('https://wayground.com/quiz/' + id, { method: 'GET' });
@@ -51,8 +51,38 @@ const PreviewScreen = () => {
         setScrollY(event.nativeEvent.contentOffset.y);
     };
 
+
+    const HeaderMenu = () => {
+        const [visible, setVisible] = useState(false);
+
+        const handleRefresh = async () => {
+            try {
+                await refetch();
+            } catch (error) {
+                console.error('Refresh failed:', error);
+            }
+            setVisible(false);
+        };
+        return (
+            <Menu
+                visible={visible}
+                onDismiss={() => setVisible(false)}
+                anchor={<IconButton icon="dots-vertical" onPress={() => setVisible(true)} />}
+            >
+                <Menu.Item onPress={handleRefresh} title="Refresh" />
+            </Menu>
+        );
+    };
+
+
     return (
         <>
+            <Stack.Screen
+                options={{
+                    headerTitle: "Preview of: " + quiz.name,
+                    headerRight: () => <HeaderMenu/>
+                }}
+            />
             <FlatList
                 data={quiz.questions}
                 onScroll={handleScroll}
