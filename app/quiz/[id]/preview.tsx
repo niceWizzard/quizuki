@@ -13,13 +13,13 @@ const PreviewScreen = () => {
     const { id } = useLocalSearchParams();
     const drizzle = useDrizzleStore(v => v.drizzle!);
     const [scrollY, setScrollY] = useState(0);
-    const [fetchStatus, setFetchStatus] = useState('');
+    const [fetchStatus, setFetchStatus] = useState('Fetching...');
 
     const { data, isFetching: isLoading, error, refetch } = useQuery({
         queryKey: ['preview', id],
         queryFn: async () => {
-            const res = await fetch('https://wayground.com/quiz/' + id, { method: 'GET' });
             setFetchStatus('Fetching...');
+            const res = await fetch('https://wayground.com/quiz/' + id, { method: 'GET' });
             const apiData = await res.json();
 
             if (!apiData.success) {
