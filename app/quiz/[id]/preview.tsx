@@ -1,6 +1,6 @@
 import React, {useRef, useState} from 'react';
 import {ActivityIndicator, FlatList, NativeScrollEvent, NativeSyntheticEvent, ScrollView, View} from "react-native";
-import {AnimatedFAB, Card, FAB, Text} from "react-native-paper";
+import {AnimatedFAB, Button, Card, FAB, Text, useTheme} from "react-native-paper";
 import {router, useLocalSearchParams} from "expo-router";
 import {useQuery} from "@tanstack/react-query";
 import {Image} from "expo-image";
@@ -10,17 +10,22 @@ import {quizTable} from "@/db/schema";
 
 const PreviewScreen = () => {
     const { id } = useLocalSearchParams();
+    const {colors} = useTheme();
     const drizzle = useDrizzleStore(v => v.drizzle!);
     const [scrollY, setScrollY] = useState(0)
 
-    const {data, isLoading, error} = useQuery({
+    const {data, isLoading, error, refetch} = useQuery({
         queryKey: ['preview', id],
         queryFn: async () => {
               const res = await fetch('https://wayground.com/quiz/'+id, {
                   method: 'GET',
               });
-              const apiData = (await res.json()).data.quiz;
-              const data = await QuizSchema.parseAsync(apiData)
+              const apiData = (await res.json());
+              if(!apiData.success) {
+                  throw new Error(apiData.message);
+              }
+
+              const data = await QuizSchema.parseAsync(apiData.data.quiz)
             if(!data)
                 throw new Error("Unable to parse.");
             return data;
@@ -28,8 +33,14 @@ const PreviewScreen = () => {
     });
 
     if( error) {
-        return <View style={{flex: 1,}}>
-            <Text>Something went wrong: {error?.message}</Text>
+        return <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+            <Text style={{
+                color: colors.error,
+            }}>Something went wrong: {error?.message}</Text>
+            <Button
+                onPress={refetch}
+            >Retry
+            </Button>
         </View>;
     }
 
