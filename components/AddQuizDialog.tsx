@@ -3,6 +3,7 @@ import { Button, Dialog, FAB, Portal, TextInput, Text, useTheme } from "react-na
 import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { extractWaygroundQuizId, isValidWaygroundUrl } from "@/utils/url";
+import {getStringAsync} from "expo-clipboard";
 
 type FormData = {
     url: string;
@@ -39,7 +40,8 @@ const AddQuizDialog = ({ onSubmit }: { onSubmit: (waygroundId: string) => void }
         handleSubmit,
         reset,
         watch,
-        formState: { errors, isValid }
+        formState: { errors, isValid },
+        setValue,
     } = useForm<FormData>({
         mode: "onChange",
         defaultValues: {
@@ -69,6 +71,11 @@ const AddQuizDialog = ({ onSubmit }: { onSubmit: (waygroundId: string) => void }
         setDialogVisible(false);
         reset();
     };
+
+    async function handlePasteClick() {
+        const text = await getStringAsync();
+        setValue("url", text, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+    }
 
     return (
         <>
@@ -129,17 +136,23 @@ const AddQuizDialog = ({ onSubmit }: { onSubmit: (waygroundId: string) => void }
                         />
                     </Dialog.Content>
                     <Dialog.Actions>
-                        <Button onPress={onDismiss}>
-                            Cancel
-                        </Button>
                         <Button
-                            mode="contained"
-                            onPress={handleSubmit(handleFormSubmit)}
-                            disabled={!isValid}
-                            theme={theme}
-                        >
-                            Add Quiz
-                        </Button>
+                            onPress={handlePasteClick}
+                        >Paste</Button>
+
+                        <View style={{flex: 1, flexDirection: "row", justifyContent: "flex-end"}}>
+                            <Button onPress={() => reset()}>
+                                Clear
+                            </Button>
+                            <Button
+                                mode="contained"
+                                onPress={handleSubmit(handleFormSubmit)}
+                                disabled={!isValid}
+                                theme={theme}
+                            >
+                                Add Quiz
+                            </Button>
+                        </View>
                     </Dialog.Actions>
                 </Dialog>
             </Portal>
