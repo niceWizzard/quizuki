@@ -67,7 +67,9 @@ export const ApiQuizSchema = z.object({
         _id: z.string(),
         questions: z.array(ApiQuestionSchema),
         name: z.string(),
-        image: z.url(),
+        image: z.string()
+            .transform(val => val === '' ? null : val)
+            .pipe(z.union([z.null(), z.url()])),
         createdAt: z.string(),
         updated: z.string(),
         slug: z.string(),
