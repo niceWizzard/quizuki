@@ -100,7 +100,7 @@ const PreviewScreen = () => {
                     <Text variant="bodySmall">{quiz.createdBy}</Text>
                     <Text variant="titleMedium">Questions</Text>
                 </View>}
-                renderItem={({ item }) => <QuestionCard question={item} />}
+                renderItem={({ item,index }) => <QuestionCard question={item} index={index} />}
             />
             <AnimatedFAB
                 label={'Save Quiz'}
