@@ -69,6 +69,7 @@ const QuizUrlInputDialog = ({isVisible, onFormSubmit, onDismiss}: QuizUrlInputDi
 
 
     function handleFormSubmit(form: FormData) {
+        reset();
         onFormSubmit(extractWaygroundQuizId(form.url)!);
     }
 
