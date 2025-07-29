@@ -5,20 +5,12 @@ import React from "react";
 import QuizItem from "@/components/QuizItem";
 import AddQuizDialog from "@/components/AddQuizDialog";
 import {Text} from "react-native-paper";
-import {router} from "expo-router";
 
 const IndexScreen = () => {
     const drizzle = useDrizzleStore(v => v.drizzle!);
     const { data: fetchedQuizzes = [] } = useLiveQuery(
         drizzle.query.quizTable.findMany()
     );
-
-    async function onSubmit(waygroundId : string) {
-        router.navigate({
-            pathname: '/quiz/[id]/preview',
-            params: {id: waygroundId}
-        });
-    }
 
     return (
         <View style={{ flex: 1, padding: 8, }}>
@@ -33,7 +25,6 @@ const IndexScreen = () => {
                 }
             />
             <AddQuizDialog
-                onSubmit={onSubmit}
             />
         </View>
     );
