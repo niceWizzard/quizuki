@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {memo, useEffect} from 'react';
 import {Dialog, Portal, ProgressBar, Text} from "react-native-paper";
 import {StyleSheet} from 'react-native';
 
@@ -57,4 +57,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default AddQuizProcessingDialog;
+export default memo(AddQuizProcessingDialog);

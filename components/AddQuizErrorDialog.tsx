@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {memo} from 'react';
 import {Button, Dialog, Portal, Text, useTheme} from "react-native-paper";
 import {ScrollView, StyleSheet} from "react-native";
 
@@ -51,4 +51,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default AddQuizErrorDialog;
+export default memo(AddQuizErrorDialog);

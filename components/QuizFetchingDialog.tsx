@@ -1,6 +1,6 @@
 import {Button, Dialog, Portal, Text, useTheme} from "react-native-paper";
 import {ActivityIndicator, ScrollView, StyleSheet} from "react-native";
-import React from "react";
+import React, {memo} from "react";
 
 
 function QuizFetchingDialog({isVisible}: {
@@ -23,4 +23,4 @@ function QuizFetchingDialog({isVisible}: {
 }
 
 
-export default QuizFetchingDialog;
+export default memo(QuizFetchingDialog);

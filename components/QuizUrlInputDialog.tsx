@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {memo, useEffect, useState} from "react";
 import {Button, Dialog, Portal, Text, TextInput, useTheme} from "react-native-paper";
 import {Keyboard, Platform, StyleSheet, View} from "react-native";
 import {Controller, useForm} from "react-hook-form";
@@ -18,7 +18,6 @@ interface QuizUrlInputDialogProps {
 const QuizUrlInputDialog = ({isVisible, onFormSubmit, onDismiss}: QuizUrlInputDialogProps) => {
     const [keyboardOffset, setKeyboardOffset] = useState(0);
     const theme = useTheme();
-
     useEffect(() => {
         const keyboardDidShowListener = Keyboard.addListener(
             Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
@@ -176,4 +175,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default QuizUrlInputDialog;
+export default memo(QuizUrlInputDialog);
