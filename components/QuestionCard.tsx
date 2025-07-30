@@ -1,43 +1,39 @@
 import React, {memo} from 'react';
 import {Card, Divider, Text, useTheme} from 'react-native-paper';
-import {z} from 'zod';
-import {ApiQuizSchema, QuizSchema} from '@/utils/fetchSchema';
 import {Image} from "expo-image";
 import RenderHTML from "react-native-render-html";
-import {useWindowDimensions, View} from "react-native";
+import {useWindowDimensions} from "react-native";
+import {QuestionType} from "@/db/question";
+import {WholeQuestion} from "@/types/db";
 
 
-type Quiz = z.infer<typeof QuizSchema>;
-
-
-
-const QuestionCardComp = ({ question,index }: { question: Quiz["questions"][number],index:number }) => {
+const QuestionCardComp = ({ question,index }: { question: WholeQuestion,index:number }) => {
     const {colors, fonts} = useTheme();
     const {width} = useWindowDimensions();
     let questionTypeLabel = "Unsupported";
 
     switch (question.type) {
-        case "MSQ":
+        case QuestionType.MS:
             questionTypeLabel = "Multiple Selection";
             break;
-        case "MCQ":
+        case QuestionType.MC:
             questionTypeLabel = "Multiple Choice";
             break;
-        case "BLANK":
+        case QuestionType.Blank:
             questionTypeLabel = "Identification";
             break;
     }
 
-    if(question.type === "Unsupported") {
+    if(question.type === QuestionType.Unsupported) {
         return <Card>
             <Card.Content>
                 <Text style={{marginBottom: 8}}>{index+1}. {questionTypeLabel}</Text>
                 {
-                    question.structure.query.media.length  ? (
-                        question.structure.query.media.map(v => (
+                    question.images.length  ? (
+                        question.images.map(v => (
                             <Image
-                                key={v.url}
-                                source={{uri: v.url}}
+                                key={v}
+                                source={{uri: v}}
                                 style={{width: "100%", height: 256}}
                                 contentFit="contain"
                             />
@@ -46,7 +42,7 @@ const QuestionCardComp = ({ question,index }: { question: Quiz["questions"][numb
                 }
                 <Divider style={{marginVertical: 8}} />
                 <RenderHTML
-                    source={{html: question.structure.query.text.trim().replace(/<p><br\s*\/?><\/p>/gi, '')}}
+                    source={{html: question.text.trim().replace(/<p><br\s*\/?><\/p>/gi, '')}}
                     contentWidth={width}
                     defaultTextProps={{
                         style: {
@@ -68,28 +64,44 @@ const QuestionCardComp = ({ question,index }: { question: Quiz["questions"][numb
         }
         return option === answer;
     }
-    const combinedHTML = `
-        <div >
-            ${question.structure.options.map((option, idx) => `
-                <div class="optionItem">
-                    <span class="optionIcon">${isCorrectAnswer(idx, question.structure.answer) ? '✅' : ''}</span>
-                    ${option.media.map((media) => (`<img class="optionImage" src="${media.url}" />`))}
-                    <span class="optionText">${option.text}</span>
+    let combinedHTML = '';
+
+    switch (question.type) {
+        case QuestionType.MS:
+        case QuestionType.MC:
+          combinedHTML = `
+            <div >
+                ${question.options.map((option, idx) => `
+                    <div class="optionItem">
+                        <span class="optionIcon">${isCorrectAnswer(idx, (question.answerMultipleSelection ?? question.answerMultipleChoice)!) ? '✅' : ''}</span>
+                        ${option.images.map((url) => (`<img class="optionImage" src="${url}" />`))}
+                        <span class="optionText">${option.text}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `
+            break;
+          case QuestionType.Blank:
+              combinedHTML = `
+                <div >
+                    <div class="optionItem">
+                        <span class="optionIcon">✅</span>
+                        <span class="optionText">${question.answerBlank}</span>
+                    </div>
                 </div>
-            `).join('')}
-        </div>
-    `;
+            `
+    }
 
     return (
         <Card>
             <Card.Content>
                 <Text style={{marginBottom: 8}}>{index+1}. {questionTypeLabel}</Text>
                 {
-                    question.structure.query.media.length  ? (
-                        question.structure.query.media.map(v => (
+                    question.images.length  ? (
+                        question.images.map(v => (
                             <Image
-                                key={v.url}
-                                source={{uri: v.url}}
+                                key={v}
+                                source={{uri: v}}
                                 style={{width: "100%", height: 256}}
                                 contentFit="contain"
                             />
@@ -98,7 +110,7 @@ const QuestionCardComp = ({ question,index }: { question: Quiz["questions"][numb
                 }
                 <Divider style={{marginVertical: 8}} />
                 <RenderHTML
-                    source={{html: question.structure.query.text.trim().replace(/<p><br\s*\/?><\/p>/gi, '')}}
+                    source={{html: question.text.trim().replace(/<p><br\s*\/?><\/p>/gi, '')}}
                     contentWidth={width}
                     defaultTextProps={{
                         style: {

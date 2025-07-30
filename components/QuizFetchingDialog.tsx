@@ -1,5 +1,5 @@
-import {Button, Dialog, Portal, Text, useTheme} from "react-native-paper";
-import {ActivityIndicator, ScrollView, StyleSheet} from "react-native";
+import {Dialog, Portal, Text} from "react-native-paper";
+import {ActivityIndicator} from "react-native";
 import React, {memo} from "react";
 
 

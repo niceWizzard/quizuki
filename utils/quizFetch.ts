@@ -1,13 +1,9 @@
 import {
     ApiQuestion,
     ApiQuizSchema,
-    BlankQuestion,
-    MCQuestion,
-    MSQuestion,
-    Question, Quiz,
-    UnsupportedQuestion
 } from "@/types";
 import {QuestionType} from "@/db/question";
+import {CreateQuestion, CreateQuiz, Question, QuestionInsert, QuizInsert} from "@/types/db";
 
 export async function fetchQuiz(id : string)  {
     const res = await fetch('https://wayground.com/quiz/' + id, { method: 'GET' });
@@ -18,7 +14,7 @@ export async function fetchQuiz(id : string)  {
     return apiData.data.quiz;
 }
 
-async function parseQuestions(schemaInfo: ApiQuestion[]) : Promise<Question[]> {
+async function parseQuestions(schemaInfo: ApiQuestion[]){
     return schemaInfo.map(v => {
         let type = QuestionType.Unsupported;
         switch (v.type.toLowerCase()) {
@@ -33,14 +29,16 @@ async function parseQuestions(schemaInfo: ApiQuestion[]) : Promise<Question[]> {
                 break;
         }
         const base = {
-            id: "none",
+            quizId: 69,
             onlineId: v._id,
-            createdAt: v.createdAt,
-            updatedAt: v.updated,
+            createdAt: new Date(v.createdAt),
+            updatedAt: new Date(v.updated),
             text: v.structure.query.text,
             images: v.structure.query.media.map(a => a.url),
             type,
-        };
+        } as CreateQuestion;
+
+
 
         switch (type) {
             case QuestionType.Blank: {
@@ -48,29 +46,33 @@ async function parseQuestions(schemaInfo: ApiQuestion[]) : Promise<Question[]> {
                 const answer = v.structure.options[apiAnswer].text;
                 return {
                     ...base,
-                    answer,
-                } as BlankQuestion
+                    answerBlank: answer,
+                } as CreateQuestion
             }
             case QuestionType.MC: {
                 const answer = v.structure.answer as number;
                 const options = v.structure.options.map(opt => ({
-                    id: opt.id,
                     text: opt.text,
-                    images: opt.media.map(v => ({url: v.url})),
-                }));
-                return {...base, answer, options} as MCQuestion;
+                    images: opt.media.map(v => v.url),
+                    questionId: 69,
+                })) ;
+                return {
+                    ...base,
+                    answerMultipleChoice: answer,
+                    options,
+                } as CreateQuestion;
             }
             case QuestionType.MS: {
                 const answer = v.structure.answer as number[];
                 const options = v.structure.options.map(opt => ({
-                    id: opt.id,
                     text: opt.text,
-                    images: opt.media.map(v => ({url: v.url})),
+                    images: opt.media.map(v => v.url),
+                    questionId: 69,
                 }));
-                return {...base, answer, options} as MSQuestion;
+                return {...base, answerMultipleSelection: answer, options} as CreateQuestion;
             }
             default:
-                return base as UnsupportedQuestion;
+                return base as CreateQuestion;
         }
     });
 }
@@ -81,11 +83,11 @@ export async function parseApiData(data : any) {
     return {
         name: schema.info.name,
         archived: schema.archived,
-        createdAt: schema.createdAt,
-        updatedAt: schema.updated,
+        createdAt: new Date(schema.createdAt),
+        updatedAt: new Date(schema.updated),
         createdBy: schema.createdBy.firstName + " " + schema.createdBy.lastName,
         onlineId: schema._id,
         image:  schema.info.image,
         questions,
-    } as Quiz;
+    } as CreateQuiz;
 }

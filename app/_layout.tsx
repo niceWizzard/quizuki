@@ -17,12 +17,10 @@ export default function RootLayout() {
                   }}
               />
               <Stack.Screen
-                  name="quiz/[id]/preview"
+                  name="quiz/[id]/index"
                   options={{
-                      headerTitle: "Preview Screen",
                       animation: 'fade_from_bottom',
                   }}
-
               />
           </Stack>
       </QueryClientProvider>

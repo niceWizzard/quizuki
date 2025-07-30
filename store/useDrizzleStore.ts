@@ -3,7 +3,23 @@ import { drizzle as drizzleInit } from 'drizzle-orm/expo-sqlite';
 import { migrate } from 'drizzle-orm/expo-sqlite/migrator';
 import { SQLiteDatabase } from 'expo-sqlite';
 import { create } from 'zustand';
-import * as schema from '@/db/schema';
+import {
+    quizTable,
+    questionTable,
+    questionOptionTable,
+    questionRelations,
+    quizRelations,
+    questionOptionRelations,
+} from '@/db/schema';
+
+const schema = {
+    quizTable,
+    questionTable,
+    questionOptionTable,
+    questionRelations,
+    quizRelations,
+    questionOptionRelations,
+}
 
 export type DrizzleInstance = ReturnType<typeof drizzleInit<typeof schema>>
 
@@ -13,7 +29,7 @@ export const initDrizzle = async (db: SQLiteDatabase) => {
             schema,
         });
         await migrate(drizzleDb, migrations);
-        return ({ drizzle: drizzleDb, success: true, error: undefined }) as DrizzleStore;
+        return ({ drizzle: drizzleDb, success: true, error: undefined, rawDb: db }) as DrizzleStore;
     } catch (err) {
         const error = err as Error;
         console.error(error)
@@ -29,6 +45,7 @@ interface DrizzleStore {
     drizzle: DrizzleInstance | null;
     error?: Error;
     success: boolean;
+    rawDb?: SQLiteDatabase;
 }
 
 export const useDrizzleStore = create<DrizzleStore>(() => ({

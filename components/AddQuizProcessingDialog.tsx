@@ -1,4 +1,4 @@
-import React, {memo, useEffect} from 'react';
+import React, {memo} from 'react';
 import {Dialog, Portal, ProgressBar, Text} from "react-native-paper";
 import {StyleSheet} from 'react-native';
 

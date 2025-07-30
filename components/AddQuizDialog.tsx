@@ -6,10 +6,14 @@ import QuizFetchingDialog from "@/components/QuizFetchingDialog";
 import AddQuizErrorDialog from "@/components/AddQuizErrorDialog";
 import AddQuizProcessingDialog from "@/components/AddQuizProcessingDialog";
 import {fetchQuiz, parseApiData} from "@/utils/quizFetch";
-import {Quiz} from "@/types";
 import {QuestionType} from "@/db/question";
 import {deleteFile, downloadImageToCache} from "@/utils/download";
 import {router} from "expo-router";
+import {useRepositoryStore} from "@/store/useRepositoryStore";
+import { QuizRepository } from "@/repository/quiz";
+import {CreateQuiz} from "@/types/db";
+
+type Quiz = CreateQuiz;
 
 enum DialogState {
     FormShown,
@@ -19,26 +23,18 @@ enum DialogState {
     Processing,
 }
 
-const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+// Returns a random integer between min (inclusive) and max (inclusive)
+function getRandomInt(min: number, max: number) {
+    min = Math.ceil(min);   // round up min
+    max = Math.floor(max);  // round down max
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms + getRandomInt(100, 250)));
 
 
-async function saveQuizToDatabase(quiz: Quiz, incrementProgress: () => void) {
-
-    await wait(100); // Saving of quiz to db
-    incrementProgress();
-
-    for (const question of quiz.questions) {
-
-        if (question.type === QuestionType.MC || question.type === QuestionType.MS) {
-            for (const option of question.options) {
-                await wait(100);
-                incrementProgress(); // For saving of option
-            }
-        }
-
-        await wait(100); // saving of question
-        incrementProgress(); // For completing the question
-    }
+async function saveQuizToDatabase(quiz: Quiz, incrementProgress: () => void, quizRepository: QuizRepository) {
+    return await quizRepository.createQuiz(quiz, incrementProgress);
 }
 
 const processQuizData = async (data: Quiz, incrementProgress: () => void) => {
@@ -63,15 +59,14 @@ const processQuizData = async (data: Quiz, incrementProgress: () => void) => {
                 incrementProgress();
             }
             question.images = newQuestionImages; // Update all question images
-
             // Process options if MC/MS question
             if (question.type === QuestionType.MC || question.type === QuestionType.MS) {
-                for (const option of question.options) {
+                for (const option of question.options!) {
                     const newOptionImages = [];
                     for (const image of option.images) {
-                        const cachedImage = await downloadImageToCache(image.url);
+                        const cachedImage = await downloadImageToCache(image);
                         downloadedFiles.push(cachedImage);
-                        newOptionImages.push({ ...image, url: cachedImage });
+                        newOptionImages.push(image);
                         incrementProgress();
                     }
                     option.images = newOptionImages; // Update all option images
@@ -80,8 +75,7 @@ const processQuizData = async (data: Quiz, incrementProgress: () => void) => {
 
             incrementProgress(); // For completing the question
         }
-        console.log("Processing complete with updated URLs:", JSON.stringify(data, null, 4));
-        return JSON.parse(JSON.stringify(data)) as Quiz;
+        return data as Quiz;
     } catch (error) {
         for (const file of downloadedFiles) {
             await deleteFile(file);
@@ -98,7 +92,7 @@ const AddQuizDialog = () => {
     const [error, setError] = useState<Error | undefined>();
     const [quizData, setQuizData] = useState<Quiz | undefined>();
     const [currentProgress, setCurrentProgress] = useState(0);
-
+    const quizRepository = useRepositoryStore(v => v.quiz!);
     const totalProgress = useMemo(() => {
         if (!quizData) return 0;
 
@@ -116,8 +110,8 @@ const AddQuizDialog = () => {
             total += question.images.length;
 
             if (question.type === QuestionType.MC || question.type === QuestionType.MS) {
-                total += question.options.length;
-                for (const option of question.options) {
+                total += question.options!.length;
+                for (const option of question.options!) {
                     total += option.images.length;
                 }
             }
@@ -156,17 +150,22 @@ const AddQuizDialog = () => {
             const processedData = await processQuizData(parsedData, incrementProgress);
             
             // Saving to Db
-            await saveQuizToDatabase(processedData, incrementProgress);
+            const quizId = await saveQuizToDatabase(processedData, incrementProgress, quizRepository);
             await wait(250);
             setDialogState(DialogState.Hidden);
-            router.navigate('/settings');
+            router.navigate({
+                pathname: '/quiz/[id]',
+                params: { id: quizId }
+            });
             await wait(100);
             resetState();
         } catch (e) {
+            const err = e as Error;
+            console.error(err);
             setError(e as Error);
             setDialogState(DialogState.Error);
         }
-    }, [resetState])
+    }, [quizRepository, resetState])
 
     const handleRetry = () => fetchQuizData(quizId);
     
