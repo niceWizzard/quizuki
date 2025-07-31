@@ -1,11 +1,12 @@
-import React, {useState} from 'react';
-import {ActivityIndicator, FlatList, NativeScrollEvent, NativeSyntheticEvent, View} from "react-native";
-import {AnimatedFAB, IconButton, Menu, Text} from "react-native-paper";
-import {Stack, useLocalSearchParams} from "expo-router";
-import {Image} from "expo-image";
 import QuestionCard from "@/components/QuestionCard";
-import {useLiveQuery} from "drizzle-orm/expo-sqlite";
-import {useRepositoryStore} from "@/store/useRepositoryStore";
+import { useRepositoryStore } from "@/store/useRepositoryStore";
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { setStringAsync } from 'expo-clipboard';
+import { Image } from "expo-image";
+import { Stack, useLocalSearchParams } from "expo-router";
+import React, { useState } from 'react';
+import { ActivityIndicator, FlatList, Linking, NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
+import { AnimatedFAB, IconButton, Menu, Text } from "react-native-paper";
 
 const PreviewScreen = () => {
     const { id } = useLocalSearchParams();
@@ -46,18 +47,22 @@ const PreviewScreen = () => {
 
     const HeaderMenu = () => {
         const [visible, setVisible] = useState(false);
-
-        const handleRefresh = async () => {
+        const url = `https://wayground.com/join/quiz/${quiz.onlineId}/start`;
+        const handleCopy = async () => {
             setVisible(false);
-
+            await setStringAsync(url)
         };
+        const handleOpen = async () => {
+            await Linking.openURL(url);   
+        }
         return (
             <Menu
                 visible={visible}
                 onDismiss={() => setVisible(false)}
                 anchor={<IconButton icon="dots-vertical" onPress={() => setVisible(true)} />}
             >
-                <Menu.Item onPress={handleRefresh} title="Refresh" />
+                <Menu.Item onPress={handleCopy} title="Copy Link" />
+                <Menu.Item onPress={handleOpen} title="Open in Browser" />
             </Menu>
         );
     };
