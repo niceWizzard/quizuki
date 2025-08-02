@@ -1,7 +1,10 @@
 {
   "name": "quizuki",
-  "main": "expo-router/entry",
+  "main": "index.ts",
   "version": "1.0.0",
+  "expo-router": {
+    "appRoot": "src/app"
+  },
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",

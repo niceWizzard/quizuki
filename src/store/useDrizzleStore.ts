@@ -1,4 +1,4 @@
-import migrations from '@/drizzle/migrations';
+import migrations from '~/drizzle/migrations';
 import { drizzle as drizzleInit } from 'drizzle-orm/expo-sqlite';
 import { migrate } from 'drizzle-orm/expo-sqlite/migrator';
 import { SQLiteDatabase } from 'expo-sqlite';
