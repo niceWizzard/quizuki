@@ -1,5 +1,5 @@
 import React, {memo} from 'react';
-import {Button, Dialog, Portal, Text, useTheme} from "react-native-paper";
+import {Button, Dialog, Text, useTheme} from "react-native-paper";
 import {ScrollView, StyleSheet} from "react-native";
 
 interface  Props {
@@ -16,30 +16,28 @@ const AddQuizErrorDialog = ({isVisible,onErrorRefetch, onErrorDismiss,error} : P
         return null;
     }
 
-    return <Portal>
-        <Dialog visible={isVisible}>
-            <Dialog.Content style={styles.processingContent}>
-                <ScrollView style={{flexDirection: 'column'}}>
-                    <Text style={{color: colors.error}}>{error.name}</Text>
-                    <Text style={{color: colors.error}}>{error.message}</Text>
-                </ScrollView>
-            </Dialog.Content>
-            <Dialog.Actions>
-                <Button
-                    onPress={onErrorDismiss}
-                >
-                    Cancel
-                </Button>
-                <Button
-                    onPress={onErrorRefetch}
-                    mode="contained"
-                    style={{paddingHorizontal: 8}}
-                >
-                    Retry
-                </Button>
-            </Dialog.Actions>
-        </Dialog>
-    </Portal>
+    return <Dialog visible={isVisible}>
+        <Dialog.Content style={styles.processingContent}>
+            <ScrollView style={{flexDirection: 'column'}}>
+                <Text style={{color: colors.error}}>{error.name}</Text>
+                <Text style={{color: colors.error}}>{error.message}</Text>
+            </ScrollView>
+        </Dialog.Content>
+        <Dialog.Actions>
+            <Button
+                onPress={onErrorDismiss}
+            >
+                Cancel
+            </Button>
+            <Button
+                onPress={onErrorRefetch}
+                mode="contained"
+                style={{paddingHorizontal: 8}}
+            >
+                Retry
+            </Button>
+        </Dialog.Actions>
+    </Dialog>
 };
 
 const styles = StyleSheet.create({

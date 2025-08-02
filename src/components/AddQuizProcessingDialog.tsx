@@ -1,5 +1,5 @@
 import React, {memo} from 'react';
-import {Dialog, Portal, ProgressBar, Text} from "react-native-paper";
+import {Dialog, ProgressBar, Text} from "react-native-paper";
 import {StyleSheet} from 'react-native';
 
 interface Props {
@@ -16,25 +16,23 @@ const AddQuizProcessingDialog =
     const normalizedProgress = Math.min(1, Math.max(0, progress));
 
     return (
-        <Portal>
-            <Dialog
-                visible={isVisible}
-                dismissable={false}
-            >
-                <Dialog.Content style={styles.content}>
-                    <Text variant="bodyLarge" style={styles.text}>
-                        Processing...
-                    </Text>
-                    <ProgressBar
-                        progress={normalizedProgress}
-                        style={styles.progressBar}
-                    />
-                    <Text variant="bodySmall" style={styles.percentageText}>
-                        {Math.round(normalizedProgress * 100)}%
-                    </Text>
-                </Dialog.Content>
-            </Dialog>
-        </Portal>
+        <Dialog
+            visible={isVisible}
+            dismissable={false}
+        >
+            <Dialog.Content style={styles.content}>
+                <Text variant="bodyLarge" style={styles.text}>
+                    Processing...
+                </Text>
+                <ProgressBar
+                    progress={normalizedProgress}
+                    style={styles.progressBar}
+                />
+                <Text variant="bodySmall" style={styles.percentageText}>
+                    {Math.round(normalizedProgress * 100)}%
+                </Text>
+            </Dialog.Content>
+        </Dialog>
     );
 };
 

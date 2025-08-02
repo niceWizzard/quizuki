@@ -1,5 +1,5 @@
 import {StyleSheet} from "react-native";
-import {FAB} from "react-native-paper";
+import {FAB, Portal} from "react-native-paper";
 import React, {useCallback, useMemo, useState} from "react";
 import QuizUrlInputDialog from "@/components/QuizUrlInputDialog";
 import QuizFetchingDialog from "@/components/QuizFetchingDialog";
@@ -183,27 +183,29 @@ const AddQuizDialog = () => {
                 testID="add-quiz-fab"
             />
 
-            <QuizUrlInputDialog
-                isVisible={dialogState === DialogState.FormShown}
-                onFormSubmit={handleFormSubmit}
-                onDismiss={hideDialog}
-            />
+            <Portal>
+                <QuizUrlInputDialog
+                    isVisible={dialogState === DialogState.FormShown}
+                    onFormSubmit={handleFormSubmit}
+                    onDismiss={hideDialog}
+                />
 
-            <QuizFetchingDialog
-                isVisible={dialogState === DialogState.Fetching}
-            />
+                <QuizFetchingDialog
+                    isVisible={dialogState === DialogState.Fetching}
+                />
 
-            <AddQuizProcessingDialog
-                isVisible={dialogState === DialogState.Processing}
-                progress={totalProgress > 0 ? currentProgress / totalProgress : 0}
-            />
+                <AddQuizProcessingDialog
+                    isVisible={dialogState === DialogState.Processing}
+                    progress={totalProgress > 0 ? currentProgress / totalProgress : 0}
+                />
 
-            <AddQuizErrorDialog
-                isVisible={dialogState === DialogState.Error}
-                onErrorDismiss={hideDialog}
-                onErrorRefetch={handleRetry}
-                error={error}
-            />
+                <AddQuizErrorDialog
+                    isVisible={dialogState === DialogState.Error}
+                    onErrorDismiss={hideDialog}
+                    onErrorRefetch={handleRetry}
+                    error={error}
+                />
+            </Portal>
         </>
     );
 };
