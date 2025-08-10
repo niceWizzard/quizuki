@@ -3,7 +3,7 @@ import { useRepositoryStore } from "@/store/useRepositoryStore";
 import { useLiveQuery } from "drizzle-orm/expo-sqlite";
 import { setStringAsync } from 'expo-clipboard';
 import { Image } from "expo-image";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import React, { useState } from 'react';
 import { ActivityIndicator, FlatList, Linking, NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
 import { AnimatedFAB, IconButton, Menu, Text } from "react-native-paper";
@@ -12,6 +12,7 @@ const PreviewScreen = () => {
     const { id } = useLocalSearchParams();
     const quizRepo = useRepositoryStore(v => v.quiz!)
     const [scrollY, setScrollY] = useState(0);
+
 
     const {
         data: quiz,
@@ -67,6 +68,15 @@ const PreviewScreen = () => {
         );
     };
 
+    function handleFabPress() {
+        router.replace({
+            pathname: '/quiz/[id]/pregame',
+            params: {
+                id: id as string
+            }
+        })
+    }
+
 
     return (
         <>
@@ -99,7 +109,7 @@ const PreviewScreen = () => {
                 extended={scrollY <= 80}
                 icon="content-save-outline"
                 style={{ position: 'absolute', bottom: 16, right: 16 }}
-                onPress={() => {}}
+                onPress={handleFabPress}
             />
         </>
     );
