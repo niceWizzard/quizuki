@@ -5,10 +5,11 @@ import { relations } from "drizzle-orm";
 import { playTable, questionResponseTable } from "./play";
 
 
-export const quizRelations = relations(quizTable, ({ many }) => ({
+export const quizRelations = relations(quizTable, ({ many, one }) => ({
     questions: many(questionTable, {
         relationName: "quiz_questions" // Add relation name
     }),
+    play: one(playTable),
 }));
 
 export const questionRelations = relations(questionTable, ({ many, one }) => ({
