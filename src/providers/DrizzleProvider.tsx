@@ -1,13 +1,13 @@
+import { QuizRepository } from "@/repository/quiz";
 import { initDrizzle, useDrizzleStore } from '@/store/useDrizzleStore';
+import { useRepositoryStore } from "@/store/useRepositoryStore";
+import * as SplashScreen from 'expo-splash-screen';
 import { openDatabaseAsync } from 'expo-sqlite';
 import React, { PropsWithChildren, useEffect, useState } from 'react';
-import * as SplashScreen from 'expo-splash-screen';
-import {useRepositoryStore} from "@/store/useRepositoryStore";
-import {QuizRepository} from "@/repository/quiz";
-import {View} from "react-native";
-import {Text} from "react-native-paper";
+import { View } from "react-native";
+import { Text } from "react-native-paper";
 
-export const DATABASE_NAME = 'test7';
+export const DATABASE_NAME = 'test8';
 
 // Prevent the splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();

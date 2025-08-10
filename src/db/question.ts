@@ -1,6 +1,5 @@
+import { quizTable } from "@/db/quiz";
 import { customType, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { sql } from "drizzle-orm";
-import {quizTable} from "@/db/quiz";
 
 // Question Types Enum
 export enum QuestionType {
@@ -11,7 +10,7 @@ export enum QuestionType {
 }
 
 // JSONB Custom Type for SQLite
-const customJsonb = <TData>(name: string) =>
+export const customJsonb = <TData>(name: string) =>
     customType<{ data: TData; driverData: string }>({
         dataType() {
             return 'jsonb';

@@ -1,7 +1,8 @@
 // Relations
-import {relations} from "drizzle-orm";
-import {questionOptionTable, questionTable} from "@/db/question";
-import {quizTable} from "@/db/quiz";
+import { questionOptionTable, questionTable } from "@/db/question";
+import { quizTable } from "@/db/quiz";
+import { relations } from "drizzle-orm";
+import { playTable, questionResponseTable } from "./play";
 
 
 export const quizRelations = relations(quizTable, ({ many }) => ({
@@ -26,3 +27,22 @@ export const questionOptionRelations = relations(questionOptionTable, ({ one }) 
     }),
 }));
 
+
+export const playRelations = relations(playTable, ({ many, one }) => ({
+    quiz: one(quizTable, {
+        fields: [playTable.quizId],
+        references: [quizTable.id],
+    }),
+    questionResponses: many(questionResponseTable),
+}));
+
+export const questionResponseRelations = relations(questionResponseTable, ({ one }) => ({
+    play: one(playTable, {
+        fields: [questionResponseTable.playId],
+        references: [playTable.id],
+    }),
+    question: one(questionTable, {
+        fields: [questionResponseTable.questionId],
+        references: [questionTable.id],
+    }),
+}));

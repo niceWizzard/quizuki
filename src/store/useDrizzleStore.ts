@@ -1,16 +1,20 @@
-import migrations from '~/drizzle/migrations';
+import {
+    playRelations,
+    playTable,
+    questionOptionRelations,
+    questionOptionTable,
+    questionRelations,
+    questionReponseTable,
+    questionResponseRelations,
+    questionTable,
+    quizRelations,
+    quizTable,
+} from '@/db/schema';
 import { drizzle as drizzleInit } from 'drizzle-orm/expo-sqlite';
 import { migrate } from 'drizzle-orm/expo-sqlite/migrator';
 import { SQLiteDatabase } from 'expo-sqlite';
 import { create } from 'zustand';
-import {
-    quizTable,
-    questionTable,
-    questionOptionTable,
-    questionRelations,
-    quizRelations,
-    questionOptionRelations,
-} from '@/db/schema';
+import migrations from '~/drizzle/migrations';
 
 const schema = {
     quizTable,
@@ -19,6 +23,10 @@ const schema = {
     questionRelations,
     quizRelations,
     questionOptionRelations,
+    playRelations,
+    playTable,
+    questionReponseTable,
+    questionResponseRelations,
 }
 
 export type DrizzleInstance = ReturnType<typeof drizzleInit<typeof schema>>

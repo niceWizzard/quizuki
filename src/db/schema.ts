@@ -1,19 +1,20 @@
 export {
     quizTable
-} from '@/db/quiz'
+} from '@/db/quiz';
 
 export {
-    questionTable,
-    questionOptionTable,
-} from '@/db/question'
+    questionOptionTable, questionTable
+} from '@/db/question';
 
 export {
-    quizRelations,
-    questionOptionRelations,
-    questionRelations,
+    playRelations, questionOptionRelations,
+    questionRelations, questionResponseRelations, quizRelations
 } from '@/db/relations';
 
-
+export {
+    playTable,
+    questionResponseTable as questionReponseTable
+} from '@/db/play';
 
 
 
