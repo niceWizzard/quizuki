@@ -1,9 +1,9 @@
-import {DrizzleInstance} from "@/store/useDrizzleStore";
-import {CreateQuiz} from "@/types/db";
-import {quizTable} from "@/db/schema";
-import {questionOptionTable, questionTable} from "@/db/question";
-import {eq} from "drizzle-orm";
-import {SQLiteDatabase} from "expo-sqlite";
+import { questionOptionTable, questionTable } from "@/db/question";
+import { quizTable } from "@/db/schema";
+import { DrizzleInstance } from "@/store/useDrizzleStore";
+import { CreateQuiz } from "@/types/db";
+import { eq } from "drizzle-orm";
+import { SQLiteDatabase } from "expo-sqlite";
 
 export class QuizRepository {
     constructor(private drizzle : DrizzleInstance, private sqlite : SQLiteDatabase) {}
@@ -45,6 +45,7 @@ export class QuizRepository {
                         options: true
                     }
                 },
+                play: true,
             },
         });
     }

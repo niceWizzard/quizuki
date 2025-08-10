@@ -1,3 +1,4 @@
+import { PlayRepository } from "@/repository/play";
 import { QuizRepository } from "@/repository/quiz";
 import { initDrizzle, useDrizzleStore } from '@/store/useDrizzleStore';
 import { useRepositoryStore } from "@/store/useRepositoryStore";
@@ -25,7 +26,8 @@ const DrizzleProvider = ({ children } : PropsWithChildren) => {
         const drizzle = await initDrizzle(db);
         useDrizzleStore.setState(drizzle);
         useRepositoryStore.setState({
-          quiz: new QuizRepository(drizzle.drizzle!, db)
+          quiz: new QuizRepository(drizzle.drizzle!, db),
+          play: new PlayRepository(drizzle.drizzle!),
         });
       } catch (error) {
         console.error('Failed to initialize database', error);
