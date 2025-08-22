@@ -16,13 +16,6 @@ export default function RootLayout() {
                       headerShown: false,
                   }}
               />
-              <Stack.Screen
-                  name="quiz/[id]/index"
-                  options={{
-                      headerTitle: '',
-                      animation: 'fade_from_bottom',
-                  }}
-              />
               <Stack.Screen 
                 name="quiz/[id]/pregame"
                 options={{
