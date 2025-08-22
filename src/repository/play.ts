@@ -47,7 +47,10 @@ export class PlayRepository {
             });
 
             return await this.drizzle.query.questionTable.findFirst({
-                where: eq(questionTable.id, play!.questionOrder[questionNumber])
+                where: eq(questionTable.id, play!.questionOrder[questionNumber]),
+                with: {
+                    options: true,
+                }
             });
         } catch (err) {
             return undefined;
