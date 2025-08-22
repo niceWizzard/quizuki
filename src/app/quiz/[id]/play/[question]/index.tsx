@@ -11,7 +11,10 @@ const PlayIndexScreen = () => {
   const questionIndex =  Number.parseInt(question as string);
 
   const playRepo = useRepositoryStore(v => v.play!);
-  const [data, setData] = useState<Question|undefined>()      
+  const activePlay = playRepo.activePlay!;
+  const [data, setData] = useState<Question|undefined>()
+
+  const hasNextQuestion = questionIndex >= activePlay.questionOrder.length - 1;
   
   useEffect(() => {
     async function something() {
@@ -27,8 +30,13 @@ const PlayIndexScreen = () => {
   }
 
   return (
-    <View>
-      <Text>PlayIndexScreen {id + " ::: " +  question }</Text>
+    <View style={{
+      padding: 8,
+      justifyContent: 'center',
+      flex: 1,
+      alignItems: 'center',
+    }}>
+      <Text>{questionIndex+1} out of {activePlay.questionOrder.length}</Text>
       <Text>{data.text}</Text>
       <Button onPress={() => router.replace({
         pathname: '/quiz/[id]/play/[question]',
@@ -36,7 +44,9 @@ const PlayIndexScreen = () => {
           id : id as string,
           question: Number.parseInt(question as string) + 1,
         }
-      })}>Next</Button>
+      })}
+      disabled={hasNextQuestion}
+      >Next</Button>
     </View>
   )
 }

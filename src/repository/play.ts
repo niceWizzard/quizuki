@@ -3,9 +3,20 @@ import { questionTable } from "@/db/question";
 import { quizTable } from "@/db/quiz";
 import { DrizzleInstance } from "@/store/useDrizzleStore";
 import { eq } from "drizzle-orm";
+import {Play, Quiz} from "@/types/db";
 
 export class PlayRepository {
     constructor(private drizzle: DrizzleInstance) {}
+
+    private _activePlay?: Play;
+
+    public get activePlay() {
+        return this._activePlay;
+    }
+
+    public clearPlay() {
+        this._activePlay = undefined;
+    }
 
     public async createPlay(quizId : number) {
         const quizData = await this.drizzle.query.quizTable.findFirst({
@@ -20,10 +31,12 @@ export class PlayRepository {
         });
         if(!quizData)
             throw new Error("Quiz not found!")
-        await this.drizzle.insert(playTable).values({
+        const play = await this.drizzle.insert(playTable).values({
             quizId: quizId,
             questionOrder: quizData.questions.map(q => q.id).sort(() => Math.random() - 0.5),
-        })
+        }).returning()
+
+        this._activePlay = play[0];
     }
 
 
@@ -40,6 +53,8 @@ export class PlayRepository {
             return undefined;
         }
     }
+
+
 
 
 }
