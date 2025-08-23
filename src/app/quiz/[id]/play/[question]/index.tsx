@@ -94,6 +94,13 @@ function QuestionDisplay({
                     question: questionIndex + 1,
                 }
             })
+        } else {
+            router.replace({
+                pathname: '/quiz/[id]/postgame',
+                params: {
+                    id: quizId,
+                }
+            })
         }
     }
 

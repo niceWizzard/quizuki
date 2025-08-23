@@ -3,12 +3,12 @@ import { questionTable } from "@/db/question";
 import { quizTable } from "@/db/quiz";
 import { DrizzleInstance } from "@/store/useDrizzleStore";
 import { eq } from "drizzle-orm";
-import {Play, Quiz} from "@/types/db";
+import {ActivePlay} from "@/types/db";
 
 export class PlayRepository {
     constructor(private drizzle: DrizzleInstance) {}
 
-    private _activePlay?: Play;
+    private _activePlay?: ActivePlay;
 
     public get activePlay() {
         return this._activePlay;
@@ -31,12 +31,21 @@ export class PlayRepository {
         });
         if(!quizData)
             throw new Error("Quiz not found!")
-        const play = await this.drizzle.insert(playTable).values({
+        const insertedPlay = await this.drizzle.insert(playTable).values({
             quizId: quizId,
             questionOrder: quizData.questions.map(q => q.id).sort(() => Math.random() - 0.5),
         }).returning()
 
-        this._activePlay = play[0];
+        const play = await this.drizzle.query.playTable.findFirst({
+            where: eq(playTable.quizId, quizId),
+            with: {
+                quiz: true,
+            }
+        })
+        const quiz = play?.quiz;
+        if(!quiz || !play)
+            throw new Error("Quiz not found!")
+        this._activePlay = {...play, quiz};
     }
 
 

@@ -19,3 +19,5 @@ export type WholeQuestion = Question & {options: QuestionOption[]};
 export type WholeQuiz = Quiz & {questions : WholeQuestion[]};
 
 export type Play = typeof playTable.$inferSelect;
+export type ActivePlay = Play & {quiz : Quiz}
+
