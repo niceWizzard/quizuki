@@ -2,11 +2,12 @@ import { useRepositoryStore } from '@/store/useRepositoryStore';
 import {Play, Question, WholeQuestion} from '@/types/db';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import {ScrollView, TouchableOpacity, View} from 'react-native';
+import {ScrollView, TouchableOpacity, useWindowDimensions, View} from 'react-native';
 import {Button, Card, Text, TextInput, useTheme} from 'react-native-paper';
 import {Image} from "expo-image";
 import {QuestionType} from "@/db/question";
 import RenderHTML from "react-native-render-html";
+import {Controller, useForm} from "react-hook-form";
 
 
 
@@ -72,8 +73,31 @@ function QuestionDisplay({
          hasNextQuestion,
        } : QuestionDisplayProps) {
 
-  const {colors, fonts} = useTheme()
-  return <>
+    const {width} = useWindowDimensions();
+    const {colors, fonts} = useTheme()
+
+    function onQuestionAnswered(a : number[] | string) {
+        if(question.type === QuestionType.Blank) {
+            const answer = a as string;
+            const isCorrect = question.answerBlank!
+                .replaceAll("/<[^>]*>/g", "")
+                .toLowerCase() === answer.toLowerCase()
+            alert(isCorrect);
+        } else if (question.type === QuestionType.MC) {
+
+        }
+        if(hasNextQuestion) {
+            router.replace({
+                pathname: '/quiz/[id]/play/[question]',
+                params: {
+                    id: quizId,
+                    question: questionIndex + 1,
+                }
+            })
+        }
+    }
+
+    return <>
     <Card style={{width: '100%'}}>
       <Card.Content style={{gap: 16}}>
         <Text variant="bodySmall" style={{textAlign: 'center'}}>
@@ -81,6 +105,7 @@ function QuestionDisplay({
         </Text>
         <RenderHTML
             source={{html: question.text}}
+            contentWidth={width}
             defaultTextProps={{
               style: {
                 color: colors.onBackground,
@@ -99,52 +124,68 @@ function QuestionDisplay({
       </Card.Content>
     </Card>
     <QuestionAnswerField
-        hasNextQuestion={hasNextQuestion}
-        questionIndex={questionIndex}
-        quizId={quizId}
         question={question}
+        onAnswer={onQuestionAnswered}
     />
   </>;
 }
 
 
-
-interface QuestionAnswerFieldProps {
-  quizId: number,
-  questionIndex: number ,
-  hasNextQuestion: boolean,
-  question: WholeQuestion
-}
-
-function QuestionAnswerField({hasNextQuestion,questionIndex,quizId, question}: QuestionAnswerFieldProps ) {
-
-  const {colors, fonts} = useTheme()
-
-  function navigateToNext() {
-    if(hasNextQuestion) {
-      router.replace({
-        pathname: '/quiz/[id]/play/[question]',
-        params: {
-          id: quizId,
-          question: questionIndex + 1,
+function IdentificationField ({onAnswer} : {onAnswer: (answer: string) => void}) {
+    const {
+        control,
+        handleSubmit,
+    } = useForm<{answer: string}>({
+        defaultValues: {
+            answer: '',
         }
-      })
-    } else {
-      alert("No next question")
-    }
-  }
+    })
 
-  if(question.type === QuestionType.Blank) {
+    function handleAnswerSubmit(form: {answer: string}) {
+        onAnswer(form.answer)
+    }
+
     return <View
         style={{ width: "100%", gap: 8}}
     >
-      <TextInput
-          placeholder="Your answer"
-      />
-      <Button onPress={navigateToNext}>
-        Submit
-      </Button>
+        <Controller
+            name="answer"
+            control={control}
+            render={({field: {onChange, onBlur, value}}) => (
+                <TextInput
+                    label="Your Answer"
+                    mode="flat"
+                    value={value}
+                    onBlur={onBlur}
+                    onChangeText={text => onChange(text)}
+                    onSubmitEditing={handleSubmit(handleAnswerSubmit)}
+                />
+            )}
+        />
+        <Button onPress={handleSubmit(handleAnswerSubmit)}>
+            Submit
+        </Button>
     </View>
+}
+
+interface QuestionAnswerFieldProps {
+    question: WholeQuestion,
+    onAnswer: (a : number[] | string) => void,
+}
+
+function QuestionAnswerField(
+    {
+        question,
+        onAnswer,
+
+    }: QuestionAnswerFieldProps ) {
+
+  const {colors, fonts} = useTheme()
+    const {width} = useWindowDimensions();
+
+
+  if(question.type === QuestionType.Blank) {
+    return <IdentificationField onAnswer={onAnswer} />
   }
 
   if(question.type === QuestionType.MC || question.type === QuestionType.MS) {
@@ -161,12 +202,14 @@ function QuestionAnswerField({hasNextQuestion,questionIndex,quizId, question}: Q
                 backgroundColor: colors.elevation.level2,
               }}
               onPress={() => {
-                navigateToNext()
+                  onAnswer([option.id])
               }}
             >
               {
                 option.text ? (
-                    <RenderHTML source={{html: option.text}}
+                    <RenderHTML
+                        source={{html: option.text}}
+                        contentWidth={width}
                         defaultTextProps={{
                           style: {
                             color: colors.onBackground,
