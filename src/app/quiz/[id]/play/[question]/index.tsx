@@ -1,11 +1,14 @@
 import { useRepositoryStore } from '@/store/useRepositoryStore';
-import {Question, WholeQuestion} from '@/types/db';
+import {Play, Question, WholeQuestion} from '@/types/db';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {ScrollView, TouchableOpacity, View} from 'react-native';
 import {Button, Card, Text, TextInput, useTheme} from 'react-native-paper';
 import {Image} from "expo-image";
 import {QuestionType} from "@/db/question";
+import RenderHTML from "react-native-render-html";
+
+
 
 
 const PlayIndexScreen = () => {
@@ -42,29 +45,69 @@ const PlayIndexScreen = () => {
             gap: 16,
             flexGrow: 1,
           }}>
-        <Card style={{width: '100%'}}>
-          <Card.Content style={{gap: 16}}>
-            <Text variant="bodySmall" style={{textAlign: 'center'}}>
-              {questionIndex + 1} out of {activePlay.questionOrder.length}
-            </Text>
-            <Text>{data.text}</Text>
-            {data.images.map((path) => (<Image
-                key={path}
-                source={{uri: path}}
-                style={{width: '100%', minHeight: 256, height: 'auto'}}
-                contentFit={'contain'}
-            />))}
-          </Card.Content>
-        </Card>
-        <QuestionAnswerField
-            hasNextQuestion={hasNextQuestion}
+        <QuestionDisplay
+            question={data}
             questionIndex={questionIndex}
             quizId={quizId}
-            question={data}
+            activePlay={activePlay}
+            hasNextQuestion={hasNextQuestion}
         />
       </ScrollView>
   )
 }
+
+interface QuestionDisplayProps {
+  questionIndex: number,
+  activePlay: Play,
+  question: WholeQuestion,
+  hasNextQuestion: boolean,
+  quizId: number
+}
+
+function QuestionDisplay({
+         question,
+         activePlay,
+         questionIndex,
+         quizId,
+         hasNextQuestion,
+       } : QuestionDisplayProps) {
+
+  const {colors, fonts} = useTheme()
+  return <>
+    <Card style={{width: '100%'}}>
+      <Card.Content style={{gap: 16}}>
+        <Text variant="bodySmall" style={{textAlign: 'center'}}>
+          {questionIndex + 1} out of {activePlay.questionOrder.length}
+        </Text>
+        <RenderHTML
+            source={{html: question.text}}
+            defaultTextProps={{
+              style: {
+                color: colors.onBackground,
+                fontWeight: fonts.bodyMedium.fontWeight,
+                fontSize: fonts.bodyMedium.fontSize,
+                lineHeight: fonts.bodyMedium.lineHeight,
+              }
+            }}
+        />
+        {question.images.map((path) => (<Image
+            key={path}
+            source={{uri: path}}
+            style={{width: '100%', minHeight: 256, height: 'auto'}}
+            contentFit={'contain'}
+        />))}
+      </Card.Content>
+    </Card>
+    <QuestionAnswerField
+        hasNextQuestion={hasNextQuestion}
+        questionIndex={questionIndex}
+        quizId={quizId}
+        question={question}
+    />
+  </>;
+}
+
+
 
 interface QuestionAnswerFieldProps {
   quizId: number,
@@ -75,7 +118,7 @@ interface QuestionAnswerFieldProps {
 
 function QuestionAnswerField({hasNextQuestion,questionIndex,quizId, question}: QuestionAnswerFieldProps ) {
 
-  const {colors} = useTheme()
+  const {colors, fonts} = useTheme()
 
   function navigateToNext() {
     if(hasNextQuestion) {
@@ -121,7 +164,20 @@ function QuestionAnswerField({hasNextQuestion,questionIndex,quizId, question}: Q
                 navigateToNext()
               }}
             >
-              <Text>{option.text}</Text>
+              {
+                option.text ? (
+                    <RenderHTML source={{html: option.text}}
+                        defaultTextProps={{
+                          style: {
+                            color: colors.onBackground,
+                            fontWeight: fonts.bodyMedium.fontWeight,
+                            fontSize: fonts.bodyMedium.fontSize,
+                            lineHeight: fonts.bodyMedium.lineHeight,
+                          }
+                        }}
+                    />
+                ) : null
+              }
               {
                 option.images.map((image, i) => (
                     <Image
