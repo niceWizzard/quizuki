@@ -189,6 +189,7 @@ function IdentificationField ({onAnswer} : {onAnswer: (answer: string) => void})
                     onBlur={onBlur}
                     onChangeText={text => onChange(text)}
                     onSubmitEditing={handleSubmit(handleAnswerSubmit)}
+                    autoFocus
                 />
             )}
         />
