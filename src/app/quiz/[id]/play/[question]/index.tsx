@@ -60,7 +60,7 @@ const PlayIndexScreen = () => {
   return (
       <ScrollView
           contentContainerStyle={{
-            paddingHorizontal: 24,
+            paddingHorizontal: 16,
             paddingVertical: 24,
             justifyContent: 'center',
             alignItems: 'center',
