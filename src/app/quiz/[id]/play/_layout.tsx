@@ -11,7 +11,7 @@ export default function PlayQuestionLayout() {
 
     useEffect(() => {
         return navigation.addListener('beforeRemove', (e) => {
-            if(e.data.action.type === 'POP') {
+            if(e.data.action.type === 'POP' || e.data.action.type === 'GO_BACK'){
                 e.preventDefault();
                 Alert.alert(
                     'Quiz playing?',
