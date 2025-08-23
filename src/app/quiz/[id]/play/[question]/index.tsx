@@ -172,7 +172,7 @@ function IdentificationField ({onAnswer} : {onAnswer: (answer: string) => void})
     })
 
     function handleAnswerSubmit(form: {answer: string}) {
-        onAnswer(form.answer)
+        onAnswer(form.answer.trim())
     }
 
     return <View
