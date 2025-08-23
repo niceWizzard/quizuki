@@ -55,10 +55,11 @@ async function parseQuestions(schemaInfo: ApiQuestion[]){
                     text: opt.text,
                     images: opt.media.map(v => v.url),
                     questionId: 69,
+                    onlineId: opt.id,
                 })) ;
                 return {
                     ...base,
-                    answerMultipleChoice: answer,
+                    answerMultipleChoice: v.structure.options[answer].id,
                     options,
                 } as CreateQuestion;
             }
@@ -68,8 +69,9 @@ async function parseQuestions(schemaInfo: ApiQuestion[]){
                     text: opt.text,
                     images: opt.media.map(v => v.url),
                     questionId: 69,
+                    onlineId: opt.id,
                 }));
-                return {...base, answerMultipleSelection: answer, options} as CreateQuestion;
+                return {...base, answerMultipleSelection: answer.map(i => v.structure.options[i].id), options} as CreateQuestion;
             }
             default:
                 return base as CreateQuestion;

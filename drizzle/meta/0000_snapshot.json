@@ -1,9 +1,69 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "7191e56c-ffdc-47e3-bb79-4854161baac2",
+  "id": "849aa1f8-06f2-4f84-8c0d-194c121c37d1",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
+    "plays": {
+      "name": "plays",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "quiz_id": {
+          "name": "quiz_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "question_order": {
+          "name": "question_order",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'\"2025-08-23T03:58:00.137Z\"'"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "plays_quiz_id_quizzes_id_fk": {
+          "name": "plays_quiz_id_quizzes_id_fk",
+          "tableFrom": "plays",
+          "tableTo": "quizzes",
+          "columnsFrom": [
+            "quiz_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "question_options": {
       "name": "question_options",
       "columns": {
@@ -34,6 +94,13 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "online_id": {
+          "name": "online_id",
+          "type": "text(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -41,6 +108,92 @@
         "question_options_question_id_questions_id_fk": {
           "name": "question_options_question_id_questions_id_fk",
           "tableFrom": "question_options",
+          "tableTo": "questions",
+          "columnsFrom": [
+            "question_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "question_responses": {
+      "name": "question_responses",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "play_id": {
+          "name": "play_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "question_id": {
+          "name": "question_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "is_correct": {
+          "name": "is_correct",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "answer_blank": {
+          "name": "answer_blank",
+          "type": "text(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "answer_multiple_choice": {
+          "name": "answer_multiple_choice",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "answer_multiple_selection": {
+          "name": "answer_multiple_selection",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "question_responses_play_id_plays_id_fk": {
+          "name": "question_responses_play_id_plays_id_fk",
+          "tableFrom": "question_responses",
+          "tableTo": "plays",
+          "columnsFrom": [
+            "play_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "question_responses_question_id_questions_id_fk": {
+          "name": "question_responses_question_id_questions_id_fk",
+          "tableFrom": "question_responses",
           "tableTo": "questions",
           "columnsFrom": [
             "question_id"
@@ -100,7 +253,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "CURRENT_TIMESTAMP"
+          "default": "'\"2025-08-23T03:58:00.129Z\"'"
         },
         "updated_at": {
           "name": "updated_at",
@@ -118,7 +271,7 @@
         },
         "answer_multiple_choice": {
           "name": "answer_multiple_choice",
-          "type": "integer",
+          "type": "text(48)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
