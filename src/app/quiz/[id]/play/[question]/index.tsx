@@ -1,8 +1,8 @@
 import { useRepositoryStore } from '@/store/useRepositoryStore';
-import {Play, Question, WholeQuestion} from '@/types/db';
+import {Play,  WholeQuestion} from '@/types/db';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import {ScrollView, TouchableOpacity, useWindowDimensions, View} from 'react-native';
+import {Keyboard, Platform, ScrollView, TouchableOpacity, useWindowDimensions, View} from 'react-native';
 import {Button, Card, Text, TextInput, useTheme} from 'react-native-paper';
 import {Image} from "expo-image";
 import {QuestionType} from "@/db/question";
@@ -31,6 +31,27 @@ const PlayIndexScreen = () => {
     something();
   }, [playRepo, id, question])
 
+    const [keyboardOffset, setKeyboardOffset] = useState(0);
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener(
+            Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+            (e) => {
+                setKeyboardOffset(e.endCoordinates.height);
+            }
+        );
+
+        const keyboardDidHideListener = Keyboard.addListener(
+            Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+            () => {
+                setKeyboardOffset(0);
+            }
+        );
+
+        return () => {
+            keyboardDidShowListener.remove();
+            keyboardDidHideListener.remove();
+        };
+    }, []);
 
   if(!data) {
     return <Text>Loading</Text>
@@ -45,7 +66,9 @@ const PlayIndexScreen = () => {
             alignItems: 'center',
             gap: 16,
             flexGrow: 1,
-          }}>
+            marginBottom: keyboardOffset,
+          }}
+      >
         <QuestionDisplay
             question={data}
             questionIndex={questionIndex}
