@@ -2,7 +2,7 @@ import { useRepositoryStore } from '@/store/useRepositoryStore';
 import {Play,  WholeQuestion} from '@/types/db';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import {Keyboard, Platform, ScrollView, TouchableOpacity, useWindowDimensions, View} from 'react-native';
+import {Keyboard, Platform, ScrollView, ToastAndroid, TouchableOpacity, useWindowDimensions, View} from 'react-native';
 import {Button, Card, Text, TextInput, useTheme} from 'react-native-paper';
 import {Image} from "expo-image";
 import {QuestionType} from "@/db/question";
@@ -99,15 +99,17 @@ function QuestionDisplay({
     const {width} = useWindowDimensions();
     const {colors, fonts} = useTheme()
 
-    function onQuestionAnswered(a : number[] | string) {
+    function onQuestionAnswered(a : string[] | string) {
         if(question.type === QuestionType.Blank) {
             const answer = a as string;
             const isCorrect = question.answerBlank!
                 .replaceAll("/<[^>]*>/g", "")
                 .toLowerCase() === answer.toLowerCase()
-            alert(isCorrect);
+            ToastAndroid.show(isCorrect ? "Correct!" : "Wrong!", ToastAndroid.SHORT);
         } else if (question.type === QuestionType.MC) {
-
+            const answer = a as string[];
+            const isCorrect = question.answerMultipleChoice === answer[0];
+            ToastAndroid.show(isCorrect ? "Correct!" : "Wrong!", ToastAndroid.SHORT);
         }
         if(hasNextQuestion) {
             router.replace({
@@ -201,18 +203,16 @@ function IdentificationField ({onAnswer} : {onAnswer: (answer: string) => void})
 
 interface QuestionAnswerFieldProps {
     question: WholeQuestion,
-    onAnswer: (a : number[] | string) => void,
+    onAnswer: (a : string[] | string) => void,
 }
 
 function QuestionAnswerField(
     {
         question,
         onAnswer,
-
     }: QuestionAnswerFieldProps ) {
 
-  const {colors, fonts} = useTheme()
-    const {width} = useWindowDimensions();
+
 
 
   if(question.type === QuestionType.Blank) {
@@ -220,56 +220,66 @@ function QuestionAnswerField(
   }
 
   if(question.type === QuestionType.MC || question.type === QuestionType.MS) {
-    return <View style={{width: '100%', flexGrow: 0, justifyContent: 'center',
-      gap: 8,}}
-    >
-      {
-        question.options.map((option, i) => (
-            <TouchableOpacity
-              key={`option-${option.id}`}
-              style={{
-                padding: 16,
-                borderRadius: 8,
-                backgroundColor: colors.elevation.level2,
-              }}
-              onPress={() => {
-                  onAnswer([option.id])
-              }}
-            >
-              {
-                option.text ? (
-                    <RenderHTML
-                        source={{html: option.text}}
-                        contentWidth={width}
-                        defaultTextProps={{
-                          style: {
-                            color: colors.onBackground,
-                            fontWeight: fonts.bodyMedium.fontWeight,
-                            fontSize: fonts.bodyMedium.fontSize,
-                            lineHeight: fonts.bodyMedium.lineHeight,
-                          }
-                        }}
-                    />
-                ) : null
-              }
-              {
-                option.images.map((image, i) => (
-                    <Image
-                      source={{uri: image}}
-                      key={`option-${option.id}-image-${image}`}
-                      style={{width: '100%', minHeight: 96, height: 'auto', marginTop: 8}}
-                      contentFit={'contain'}
-                    />
-                ))
-              }
-            </TouchableOpacity>
-        ))
-      }
-    </View>
+    return <QuestionWithOptionsField question={question} onAnswer={onAnswer} />
   }
 
   return null;
 }
+
+
+function QuestionWithOptionsField({question,onAnswer} : {question: WholeQuestion, onAnswer: (a: (string[] | string)) => void,}) {
+    const {colors, fonts} = useTheme()
+    const {width} = useWindowDimensions();
+    return <View style={{
+        width: '100%', flexGrow: 0, justifyContent: 'center',
+        gap: 8,
+    }}
+    >
+        {
+            question.options.map((option, i) => (
+                <TouchableOpacity
+                    key={`option-${option.id}`}
+                    style={{
+                        padding: 16,
+                        borderRadius: 8,
+                        backgroundColor: colors.elevation.level2,
+                    }}
+                    onPress={() => {
+                        onAnswer([option.onlineId])
+                    }}
+                >
+                    {
+                        option.text ? (
+                            <RenderHTML
+                                source={{html: option.text}}
+                                contentWidth={width}
+                                defaultTextProps={{
+                                    style: {
+                                        color: colors.onBackground,
+                                        fontWeight: fonts.bodyMedium.fontWeight,
+                                        fontSize: fonts.bodyMedium.fontSize,
+                                        lineHeight: fonts.bodyMedium.lineHeight,
+                                    }
+                                }}
+                            />
+                        ) : null
+                    }
+                    {
+                        option.images.map((image, i) => (
+                            <Image
+                                source={{uri: image}}
+                                key={`option-${option.id}-image-${image}`}
+                                style={{width: '100%', minHeight: 96, height: 'auto', marginTop: 8}}
+                                contentFit={'contain'}
+                            />
+                        ))
+                    }
+                </TouchableOpacity>
+            ))
+        }
+    </View>;
+}
+
 
 
 export default PlayIndexScreen
