@@ -1,9 +1,9 @@
-import PlayIndexScreen from "@/app/quiz/[id]/play/[question]";
 import {TouchableOpacity, useWindowDimensions, View} from "react-native";
 import {useTheme} from "react-native-paper";
 import {WholeQuestion} from "@/types/db";
 import RenderHTML from "react-native-render-html";
 import {Image} from "expo-image";
+import shuffle from "lodash.shuffle";
 
 
 function QuestionWithOptionsField({question,onAnswer} : {question: WholeQuestion, onAnswer: (a: (string[] | string)) => void,}) {
@@ -15,7 +15,7 @@ function QuestionWithOptionsField({question,onAnswer} : {question: WholeQuestion
     }}
     >
         {
-            question.options.map((option, i) => (
+            shuffle(question.options).map((option, i) => (
                 <TouchableOpacity
                     key={`option-${option.id}`}
                     style={{
