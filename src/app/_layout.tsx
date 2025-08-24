@@ -16,6 +16,12 @@ export default function RootLayout() {
                       headerShown: false,
                   }}
               />
+              <Stack.Screen
+                name="quiz/[id]/index"
+                options={{
+                    headerTitle: "",
+                }}
+              />
               <Stack.Screen 
                 name="quiz/[id]/pregame"
                 options={{
