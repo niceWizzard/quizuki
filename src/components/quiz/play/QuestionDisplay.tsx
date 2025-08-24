@@ -38,7 +38,12 @@ function QuestionDisplay({
             const answer = a as string[];
             const isCorrect = question.answerMultipleChoice === answer[0];
             ToastAndroid.show(isCorrect ? "Correct!" : "Wrong!", ToastAndroid.SHORT);
+        } else if(question.type === QuestionType.MS) {
+            const answer = a as string[];
+            const isCorrect = question.answerMultipleSelection!.every(v => answer.includes(v));
+            ToastAndroid.show(isCorrect ? "Correct!" : "Wrong!", ToastAndroid.SHORT);
         }
+
         if(hasNextQuestion) {
             router.replace({
                 pathname: '/quiz/[id]/play/[question]',

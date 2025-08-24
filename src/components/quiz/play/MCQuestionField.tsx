@@ -6,7 +6,7 @@ import {Image} from "expo-image";
 import shuffle from "lodash.shuffle";
 
 
-function QuestionWithOptionsField({question,onAnswer} : {question: WholeQuestion, onAnswer: (a: (string[] | string)) => void,}) {
+function MCQuestionField({question,onAnswer} : {question: WholeQuestion, onAnswer: (a: (string[] | string)) => void,}) {
     const {colors, fonts} = useTheme()
     const {width} = useWindowDimensions();
     return <View style={{
@@ -60,4 +60,4 @@ function QuestionWithOptionsField({question,onAnswer} : {question: WholeQuestion
 }
 
 
-export default QuestionWithOptionsField;
+export default MCQuestionField;

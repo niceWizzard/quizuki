@@ -2,7 +2,8 @@ import {WholeQuestion} from "@/types/db";
 import {QuestionType} from "@/db/question";
 import React from "react";
 import IdentificationField from "@/components/quiz/play/IdentificationField";
-import QuestionWithOptionsField from "@/components/quiz/play/QuestionWithOptions";
+import MCQuestionField from "@/components/quiz/play/MCQuestionField";
+import MSQuestionField from "@/components/quiz/play/MSQuestionField";
 
 interface QuestionAnswerFieldProps {
     question: WholeQuestion,
@@ -19,8 +20,12 @@ function QuestionAnswerField(
         return <IdentificationField onAnswer={onAnswer} />
     }
 
-    if(question.type === QuestionType.MC || question.type === QuestionType.MS) {
-        return <QuestionWithOptionsField question={question} onAnswer={onAnswer} />
+    if(question.type === QuestionType.MC) {
+        return <MCQuestionField question={question} onAnswer={onAnswer} />
+    }
+
+    if(question.type === QuestionType.MS) {
+        return <MSQuestionField question={question} onAnswer={onAnswer} />
     }
 
     return null;
