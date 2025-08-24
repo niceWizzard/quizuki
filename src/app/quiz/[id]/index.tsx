@@ -107,7 +107,7 @@ const PreviewScreen = () => {
             <AnimatedFAB
                 label={'Start'}
                 extended={scrollY <= 80}
-                icon="content-save-outline"
+                icon="play"
                 style={{ position: 'absolute', bottom: 16, right: 16 }}
                 onPress={handleFabPress}
             />
