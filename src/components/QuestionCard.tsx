@@ -58,11 +58,11 @@ const QuestionCardComp = ({ question,index }: { question: WholeQuestion,index:nu
     }
 
 
-    function isCorrectAnswer(option : number, answer : number | number[]) : boolean {
-        if(Array.isArray(answer)) {
-            return answer.includes(option);
+    function isCorrectAnswer(optionOnlineId : string, answerOnlineId : string | string[]) : boolean {
+        if(Array.isArray(answerOnlineId)) {
+            return answerOnlineId.includes(optionOnlineId);
         }
-        return option === answer;
+        return optionOnlineId === answerOnlineId;
     }
     let combinedHTML = '';
 
@@ -73,7 +73,7 @@ const QuestionCardComp = ({ question,index }: { question: WholeQuestion,index:nu
             <div >
                 ${question.options.map((option, idx) => `
                     <div class="optionItem">
-                        <span class="optionIcon">${isCorrectAnswer(idx, (question.answerMultipleSelection ?? question.answerMultipleChoice)!) ? '✅' : ''}</span>
+                        <span class="optionIcon">${isCorrectAnswer(option.onlineId, (question.answerMultipleSelection ?? question.answerMultipleChoice)!) ? '✅' : ''}</span>
                         ${option.images.map((url) => (`<img class="optionImage" src="${url}" />`))}
                         <span class="optionText">${option.text}</span>
                     </div>
