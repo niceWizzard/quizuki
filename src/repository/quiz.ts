@@ -1,9 +1,10 @@
 import { questionOptionTable, questionTable } from "@/db/question";
 import { quizTable } from "@/db/schema";
 import { DrizzleInstance } from "@/store/useDrizzleStore";
-import { CreateQuiz } from "@/types/db";
+import {CreateQuiz, WholeQuiz} from "@/types/db";
 import { eq } from "drizzle-orm";
 import { SQLiteDatabase } from "expo-sqlite";
+import {deleteFile} from "@/utils/download";
 
 export class QuizRepository {
     constructor(private drizzle : DrizzleInstance, private sqlite : SQLiteDatabase) {}
@@ -54,4 +55,27 @@ export class QuizRepository {
         return this.drizzle.query.quizTable.findMany();
     }
 
+    async deleteQuiz(quizId: number) {
+        const filesToDelete: string[] = []
+
+        const quiz = await this.getQuizData(quizId);
+        if(!quiz) {
+            throw new Error("Quiz not found while deleting!");
+        }
+        filesToDelete.push(quiz.image)
+
+        quiz.questions.forEach(question => {
+            question.images.forEach(image => filesToDelete.push(image));
+            question.options.forEach(opt => opt.images.forEach(image => filesToDelete.push(image)));
+        })
+
+        await this.sqlite.withTransactionAsync(async () => {
+            await this.drizzle.delete(quizTable).where(eq(quizTable.id, quizId));
+        });
+
+        for (const file of filesToDelete) {
+            await deleteFile(file);
+        }
+
+    }
 }

@@ -5,7 +5,7 @@ import { setStringAsync } from 'expo-clipboard';
 import { Image } from "expo-image";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import React, { useState } from 'react';
-import { ActivityIndicator, FlatList, Linking, NativeScrollEvent, NativeSyntheticEvent, View } from "react-native";
+import {ActivityIndicator, Alert, FlatList, Linking, NativeScrollEvent, NativeSyntheticEvent, View} from "react-native";
 import { AnimatedFAB, IconButton, Menu, Text } from "react-native-paper";
 
 const PreviewScreen = () => {
@@ -44,8 +44,6 @@ const PreviewScreen = () => {
         setScrollY(event.nativeEvent.contentOffset.y);
     };
 
-
-
     const HeaderMenu = () => {
         const [visible, setVisible] = useState(false);
         const url = `https://wayground.com/join/quiz/${quiz.onlineId}/start`;
@@ -56,6 +54,26 @@ const PreviewScreen = () => {
         const handleOpen = async () => {
             await Linking.openURL(url);   
         }
+
+        function handleDelete() {
+            Alert.alert(
+                "Delete quiz",
+                "Are you sure you want to delete this quiz?",
+                [
+                    {
+                        text: "Cancel",
+                    },
+                    {
+                        text: "Delete",
+                        onPress: async () => {
+                            router.back()
+                            await quizRepo.deleteQuiz(Number.parseInt(id.toString()))
+                        }
+                    }
+                ]
+            );
+        }
+
         return (
             <Menu
                 visible={visible}
@@ -64,6 +82,7 @@ const PreviewScreen = () => {
             >
                 <Menu.Item onPress={handleCopy} title="Copy Link" />
                 <Menu.Item onPress={handleOpen} title="Open in Browser" />
+                <Menu.Item onPress={handleDelete} title="Delete" />
             </Menu>
         );
     };
