@@ -39,7 +39,11 @@ const PregameScreen = () => {
   }
 
   return (
-    <View>
+    <View style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    }}>
       <Text>PregameScreen {playInfo?.name}</Text>
       <Button onPress={handleOnPlay}>Play</Button>
     </View>
