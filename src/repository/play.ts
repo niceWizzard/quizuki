@@ -18,6 +18,19 @@ export class PlayRepository {
         this._activePlay = undefined;
     }
 
+    public async activatePlay(quizId : number) {
+        const play = await this.drizzle.query.playTable.findFirst({
+            where: eq(playTable.quizId, quizId),
+            with: {
+                quiz: true,
+            }
+        })
+        if(!play || !play.quiz) {
+            throw new Error(`Play ${quizId} not found`);
+        }
+        this._activePlay = play as ActivePlay;
+    }
+
     public async createPlay(quizId : number) {
         const quizData = await this.drizzle.query.quizTable.findFirst({
             where: eq(quizTable.id, quizId),

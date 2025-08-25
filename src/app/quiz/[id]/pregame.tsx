@@ -15,7 +15,7 @@ const PregameScreen = () => {
 
   async function handleOnPlay(){
     await playRepo.createPlay(quizId)
-    return router.replace({
+    router.replace({
       pathname: '/quiz/[id]/play/[question]',
       params: {
         id: id as string,
@@ -24,7 +24,18 @@ const PregameScreen = () => {
     });
   }
 
-  const playInfo = data;
+  async function handleOnContinue() {
+      await playRepo.activatePlay(quizId);
+      router.replace({
+          pathname: '/quiz/[id]/play/[question]',
+          params: {
+              id: id as string,
+              question: 0,
+          }
+      });
+  }
+
+  const quizInfo = data;
 
   if(error) {
     return <View>
@@ -32,7 +43,7 @@ const PregameScreen = () => {
     </View>
   }
 
-  if(!playInfo) {
+  if(!quizInfo) {
     return <View style={{flex: 1}}>
       <Text>Not found</Text>
     </View>
@@ -44,8 +55,18 @@ const PregameScreen = () => {
         justifyContent: 'center',
         alignItems: 'center',
     }}>
-      <Text>PregameScreen {playInfo?.name}</Text>
-      <Button onPress={handleOnPlay}>Play</Button>
+      <Text variant="bodyLarge">{quizInfo?.name}</Text>
+        {
+            quizInfo.play ? (
+                <View style={{gap: 16, marginTop: 32,}}>
+                    <Text variant="bodySmall">Existing session has been detected.</Text>
+                    <Button mode="contained-tonal" onPress={handleOnContinue}>Continue?</Button>
+                    <Button onPress={handleOnPlay}>Create a new one</Button>
+                </View>
+            ) : (
+                <Button onPress={handleOnPlay}>Play</Button>
+            )
+        }
     </View>
   )
 
