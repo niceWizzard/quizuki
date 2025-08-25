@@ -17,7 +17,7 @@ function MCQuestionField({question, onAnswer, state}: {
     const {width} = useWindowDimensions();
     const [selectedOption, setSelectedOption] = useState('')
 
-    const shuffledQuestions = useMemo(() => shuffle(question.options), [question.options])
+    const shuffledOptions = useMemo(() => shuffle(question.options), [question.options])
 
     return <View style={{
         width: '100%', flexGrow: 0, justifyContent: 'center',
@@ -25,7 +25,7 @@ function MCQuestionField({question, onAnswer, state}: {
     }}
     >
         {
-            shuffledQuestions.map((option, i) => (
+            shuffledOptions.map((option, i) => (
                 <TouchableOpacity
                     key={`option-${option.id}`}
                     style={{
