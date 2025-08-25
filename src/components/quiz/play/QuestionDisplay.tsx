@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useWindowDimensions} from "react-native";
 import {Card, Text, useTheme} from "react-native-paper";
 import {Play, WholeQuestion} from "@/types/db";
@@ -27,7 +27,16 @@ function QuestionDisplay({
 
     const {width} = useWindowDimensions();
     const {colors, fonts} = useTheme();
-    const [questionState, setQuestionState] = useState(QuestionState.Answering)
+    const [questionState, setQuestionState] = useState(QuestionState.Answering);
+    const timeoutCancel = useRef<number|null>(null);
+
+    useEffect(() => {
+        return () => {
+            if(timeoutCancel.current)
+                clearTimeout(timeoutCancel.current)
+        }
+    }, []);
+
 
     function onQuestionAnswered(a : string[] | string) {
         let isCorrect = false;
@@ -44,7 +53,7 @@ function QuestionDisplay({
             isCorrect = question.answerMultipleSelection!.every(v => answer.includes(v));
         }
         setQuestionState(isCorrect ? QuestionState.Correct : QuestionState.Incorrect);
-        setTimeout(() => {
+        timeoutCancel.current = setTimeout(() => {
             if(hasNextQuestion) {
                 router.replace({
                     pathname: '/quiz/[id]/play/[question]',
