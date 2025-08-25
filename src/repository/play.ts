@@ -30,12 +30,15 @@ export class PlayRepository {
             }
         });
         if(!quizData)
-            throw new Error("Quiz not found!")
-        const insertedPlay = await this.drizzle.insert(playTable).values({
+            throw new Error("Quiz not found!");
+        // Delete old ones
+        await this.drizzle.delete(playTable)
+            .where(eq(playTable.quizId, quizId));
+        // Create another play
+        await this.drizzle.insert(playTable).values({
             quizId: quizId,
             questionOrder: quizData.questions.map(q => q.id).sort(() => Math.random() - 0.5),
         }).returning()
-
         const play = await this.drizzle.query.playTable.findFirst({
             where: eq(playTable.quizId, quizId),
             with: {
