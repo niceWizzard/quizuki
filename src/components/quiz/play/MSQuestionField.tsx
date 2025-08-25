@@ -5,15 +5,22 @@ import RenderHTML from "react-native-render-html";
 import {Image} from "expo-image";
 import shuffle from "lodash.shuffle";
 import {useMemo, useState} from "react";
+import {getOptionBgColor, getTextColor, QuestionState} from "@/utils/questionColors";
 
 
-function MCQuestionField({question,onAnswer} : {question: WholeQuestion, onAnswer: (a: (string[] | string)) => void,}) {
+function MCQuestionField({question, onAnswer, state}: {
+    question: WholeQuestion,
+    onAnswer: (a: (string[] | string)) => void,
+    state: QuestionState
+}) {
     const {colors, fonts} = useTheme()
     const {width} = useWindowDimensions();
     const shuffledOptions = useMemo(() => shuffle(question.options), [question.options]);
-    const [selectedOptions, setSelectedOptions] = useState<{[key: string]: boolean}>({})
+    const [selectedOptions, setSelectedOptions] = useState<{[key: string]: boolean}>({});
+    const [hasSubmitted, setHasSubmitted] = useState(false);
 
     function handleSubmit() {
+        setHasSubmitted(true);
         onAnswer(Object.keys(selectedOptions))
     }
 
@@ -29,8 +36,12 @@ function MCQuestionField({question,onAnswer} : {question: WholeQuestion, onAnswe
         });
     }
 
-    function getOptionBgColor(option: QuestionOption) {
-        if(selectedOptions[option.onlineId] ) {
+    function optionBgColor(option: QuestionOption) {
+        const isSelected = selectedOptions[option.onlineId];
+        if(hasSubmitted) {
+            return getOptionBgColor(state, colors, isSelected)
+        }
+        if(isSelected) {
             return colors.tertiary;
         }
         return colors.elevation.level2
@@ -48,7 +59,8 @@ function MCQuestionField({question,onAnswer} : {question: WholeQuestion, onAnswe
         gap: 8,
     }}
     >
-        <Text>Select up to {question.answerMultipleSelection!.length}</Text>
+        <Text style={{color: getTextColor(state, colors)}}
+        >Select up to {question.answerMultipleSelection!.length}</Text>
         {
             shuffledOptions.map((option, i) => (
                 <TouchableOpacity
@@ -56,8 +68,9 @@ function MCQuestionField({question,onAnswer} : {question: WholeQuestion, onAnswe
                     style={{
                         padding: 16,
                         borderRadius: 8,
-                        backgroundColor: getOptionBgColor(option),
+                        backgroundColor: optionBgColor(option),
                     }}
+                    disabled={hasSubmitted}
                     onPress={() => {
                         toggleOption(option.onlineId)
                     }}
@@ -91,7 +104,9 @@ function MCQuestionField({question,onAnswer} : {question: WholeQuestion, onAnswe
                 </TouchableOpacity>
             ))
         }
-        <Button onPress={handleSubmit}>Submit</Button>
+        <Button onPress={handleSubmit}
+                disabled={hasSubmitted}
+        >Submit</Button>
     </View>;
 }
 

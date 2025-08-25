@@ -1,5 +1,5 @@
-import React from 'react';
-import {ToastAndroid, useWindowDimensions} from "react-native";
+import React, {useState} from 'react';
+import {useWindowDimensions} from "react-native";
 import {Card, Text, useTheme} from "react-native-paper";
 import {Play, WholeQuestion} from "@/types/db";
 import {QuestionType} from "@/db/question";
@@ -7,6 +7,7 @@ import {router} from "expo-router";
 import RenderHTML from "react-native-render-html";
 import QuestionAnswerField from "@/components/quiz/play/QuestionAnswerField";
 import {Image} from "expo-image";
+import {getTextColor, QuestionState} from "@/utils/questionColors";
 
 interface QuestionDisplayProps {
     questionIndex: number,
@@ -25,41 +26,42 @@ function QuestionDisplay({
                          } : QuestionDisplayProps) {
 
     const {width} = useWindowDimensions();
-    const {colors, fonts} = useTheme()
+    const {colors, fonts} = useTheme();
+    const [questionState, setQuestionState] = useState(QuestionState.Answering)
 
     function onQuestionAnswered(a : string[] | string) {
+        let isCorrect = false;
         if(question.type === QuestionType.Blank) {
             const answer = a as string;
-            const isCorrect = question.answerBlank!
+            isCorrect = question.answerBlank!
                 .replaceAll("/<[^>]*>/g", "")
                 .toLowerCase() === answer.toLowerCase()
-            ToastAndroid.show(isCorrect ? "Correct!" : "Wrong!", ToastAndroid.SHORT);
         } else if (question.type === QuestionType.MC) {
             const answer = a as string[];
-            const isCorrect = question.answerMultipleChoice === answer[0];
-            ToastAndroid.show(isCorrect ? "Correct!" : "Wrong!", ToastAndroid.SHORT);
+            isCorrect = question.answerMultipleChoice === answer[0];
         } else if(question.type === QuestionType.MS) {
             const answer = a as string[];
-            const isCorrect = question.answerMultipleSelection!.every(v => answer.includes(v));
-            ToastAndroid.show(isCorrect ? "Correct!" : "Wrong!", ToastAndroid.SHORT);
+            isCorrect = question.answerMultipleSelection!.every(v => answer.includes(v));
         }
-
-        if(hasNextQuestion) {
-            router.replace({
-                pathname: '/quiz/[id]/play/[question]',
-                params: {
-                    id: quizId,
-                    question: questionIndex + 1,
-                }
-            })
-        } else {
-            router.replace({
-                pathname: '/quiz/[id]/postgame',
-                params: {
-                    id: quizId,
-                }
-            })
-        }
+        setQuestionState(isCorrect ? QuestionState.Correct : QuestionState.Incorrect);
+        setTimeout(() => {
+            if(hasNextQuestion) {
+                router.replace({
+                    pathname: '/quiz/[id]/play/[question]',
+                    params: {
+                        id: quizId,
+                        question: questionIndex + 1,
+                    }
+                })
+            } else {
+                router.replace({
+                    pathname: '/quiz/[id]/postgame',
+                    params: {
+                        id: quizId,
+                    }
+                })
+            }
+        }, 1000);
     }
 
     return <>
@@ -73,7 +75,7 @@ function QuestionDisplay({
                     contentWidth={width}
                     defaultTextProps={{
                         style: {
-                            color: colors.onBackground,
+                            color: getTextColor(questionState, colors),
                             fontWeight: fonts.bodyMedium.fontWeight,
                             fontSize: fonts.bodyMedium.fontSize,
                             lineHeight: fonts.bodyMedium.lineHeight,
@@ -91,6 +93,7 @@ function QuestionDisplay({
         <QuestionAnswerField
             question={question}
             onAnswer={onQuestionAnswered}
+            state={questionState}
         />
     </>;
 }

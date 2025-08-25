@@ -4,26 +4,38 @@ import {WholeQuestion} from "@/types/db";
 import RenderHTML from "react-native-render-html";
 import {Image} from "expo-image";
 import shuffle from "lodash.shuffle";
+import {getOptionBgColor, QuestionState} from "@/utils/questionColors";
+import {useMemo, useState} from "react";
 
 
-function MCQuestionField({question,onAnswer} : {question: WholeQuestion, onAnswer: (a: (string[] | string)) => void,}) {
+function MCQuestionField({question, onAnswer, state}: {
+    question: WholeQuestion,
+    onAnswer: (a: (string[] | string)) => void,
+    state: QuestionState
+}) {
     const {colors, fonts} = useTheme()
     const {width} = useWindowDimensions();
+    const [selectedOption, setSelectedOption] = useState('')
+
+    const shuffledQuestions = useMemo(() => shuffle(question.options), [question.options])
+
     return <View style={{
         width: '100%', flexGrow: 0, justifyContent: 'center',
         gap: 8,
     }}
     >
         {
-            shuffle(question.options).map((option, i) => (
+            shuffledQuestions.map((option, i) => (
                 <TouchableOpacity
                     key={`option-${option.id}`}
                     style={{
                         padding: 16,
                         borderRadius: 8,
-                        backgroundColor: colors.elevation.level2,
+                        backgroundColor: getOptionBgColor(state, colors, selectedOption === option.onlineId),
                     }}
+                    disabled={!!selectedOption}
                     onPress={() => {
+                        setSelectedOption(option.onlineId)
                         onAnswer([option.onlineId])
                     }}
                 >
