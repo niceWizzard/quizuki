@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "849aa1f8-06f2-4f84-8c0d-194c121c37d1",
+  "id": "c89d2c67-e0b9-41b4-95e9-5a338da1f7f4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "plays": {
@@ -34,7 +34,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2025-08-23T03:58:00.137Z\"'"
+          "default": "'\"2025-08-25T23:37:11.632Z\"'"
         },
         "updated_at": {
           "name": "updated_at",
@@ -163,7 +163,7 @@
         },
         "answer_multiple_choice": {
           "name": "answer_multiple_choice",
-          "type": "integer",
+          "type": "text(255)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -253,7 +253,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'\"2025-08-23T03:58:00.129Z\"'"
+          "default": "'\"2025-08-25T23:37:11.627Z\"'"
         },
         "updated_at": {
           "name": "updated_at",

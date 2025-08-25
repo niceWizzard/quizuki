@@ -16,8 +16,8 @@ export const questionResponseTable = sqliteTable('question_responses', {
     questionId: integer('question_id').references(() => questionTable.id, {onDelete: 'cascade'}),
     isCorrect: integer('is_correct', {mode: 'boolean'}).notNull(),
     answerBlank: text("answer_blank", { length: 255 }),
-    answerMultipleChoice: integer("answer_multiple_choice"),
-    answerMultipleSelection: customJsonb<number[]>('answer_multiple_selection'),
+    answerMultipleChoice: text("answer_multiple_choice", {length: 255}),
+    answerMultipleSelection: customJsonb<string[]>('answer_multiple_selection'),
 });
 
 
