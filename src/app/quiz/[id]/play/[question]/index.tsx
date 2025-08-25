@@ -56,6 +56,7 @@ const PlayIndexScreen = () => {
 
   return (
       <ScrollView
+          keyboardShouldPersistTaps='handled'
           contentContainerStyle={{
             paddingHorizontal: 16,
             paddingVertical: 24,
