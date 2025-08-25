@@ -39,7 +39,12 @@ function MCQuestionField({question, onAnswer, state}: {
     function optionBgColor(option: QuestionOption) {
         const isSelected = selectedOptions[option.onlineId];
         if(hasSubmitted) {
-            return getOptionBgColor(state, colors, isSelected)
+            return getOptionBgColor(
+                state,
+                colors,
+                isSelected,
+                question.answerMultipleSelection!.includes(option.onlineId),
+            )
         }
         if(isSelected) {
             return colors.tertiary;

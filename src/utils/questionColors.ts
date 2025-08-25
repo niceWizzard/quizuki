@@ -17,7 +17,15 @@ export function getTextColor(state : QuestionState, colors: MD3Colors) {
     return colors.onBackground;
 }
 
-export function getOptionBgColor(state : QuestionState, colors : MD3Colors, selected: boolean) {
+export function getOptionBgColor(
+    state : QuestionState,
+    colors : MD3Colors,
+    selected: boolean,
+    isCorrectAnswer: boolean,
+) {
+    if(isCorrectAnswer && state !== QuestionState.Answering) {
+        return "green";
+    }
     if(selected) {
         return getTextColor(state, colors);
     }

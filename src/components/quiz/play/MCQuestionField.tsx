@@ -31,7 +31,12 @@ function MCQuestionField({question, onAnswer, state}: {
                     style={{
                         padding: 16,
                         borderRadius: 8,
-                        backgroundColor: getOptionBgColor(state, colors, selectedOption === option.onlineId),
+                        backgroundColor: getOptionBgColor(
+                            state,
+                            colors,
+                            selectedOption === option.onlineId,
+                            option.onlineId === question.answerMultipleChoice!,
+                        ),
                     }}
                     disabled={!!selectedOption}
                     onPress={() => {

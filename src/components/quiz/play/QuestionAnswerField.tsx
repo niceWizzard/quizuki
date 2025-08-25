@@ -23,6 +23,7 @@ function QuestionAnswerField(
         return <IdentificationField
             onAnswer={onAnswer}
             state={state}
+            answer={question.answerBlank!}
         />
     }
 

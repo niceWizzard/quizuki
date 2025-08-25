@@ -1,10 +1,14 @@
-import {Button, TextInput, useTheme} from "react-native-paper";
+import {Button, Text, TextInput, useTheme} from "react-native-paper";
 import React, {useState} from "react";
 import {Controller, useForm} from "react-hook-form";
 import {View} from "react-native";
 import {getTextColor, QuestionState} from "@/utils/questionColors";
 
-function IdentificationField({onAnswer, state}: { onAnswer: (answer: string) => void, state: QuestionState }) {
+function IdentificationField({onAnswer, state, answer}: {
+    onAnswer: (answer: string) => void,
+    state: QuestionState,
+    answer: string,
+}) {
     const {
         control,
         handleSubmit,
@@ -46,11 +50,19 @@ function IdentificationField({onAnswer, state}: { onAnswer: (answer: string) => 
                 />
             )}
         />
+        {
+            state === QuestionState.Incorrect ? (
+                <Text style={{color: textColor}}>
+                    Correct Answer: {answer}
+                </Text>
+            ) : null
+        }
         <Button onPress={handleSubmit(handleAnswerSubmit)}
                 disabled={hasSubmitted}
         >
             Submit
         </Button>
+
     </View>
 }
 
