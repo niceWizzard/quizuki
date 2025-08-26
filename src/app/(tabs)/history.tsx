@@ -35,6 +35,9 @@ const HistoryScreen = () => {
             data={allPlays}
             keyExtractor={(item) => item.quizId!.toString()}
             contentContainerStyle={{ padding: 16, gap: 8 }}
+            ListEmptyComponent={
+                <Text>No plays yet.</Text>
+            }
             renderItem={({ item }) => (
                 <Card onPress={() => {
                     router.navigate({
