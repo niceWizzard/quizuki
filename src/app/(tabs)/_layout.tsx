@@ -19,6 +19,18 @@ const TabsLayout = () => {
                 }}
             />
             <Tabs.Screen
+                name="history"
+                options={{
+                    headerTitle: "History",
+                    tabBarLabel: "History",
+                    tabBarIcon: ({ color,focused }) => (
+                        <View>
+                            <MaterialIcons name="history" size={ focused ? 26 : 24} color={color} />
+                        </View>
+                    ),
+                }}
+            />
+            <Tabs.Screen
                 name="settings"
                 options={{
                     headerTitle: "Settings",
