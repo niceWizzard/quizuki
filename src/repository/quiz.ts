@@ -1,10 +1,11 @@
 import { questionOptionTable, questionTable } from "@/db/question";
-import { quizTable } from "@/db/schema";
+import {playTable, quizTable} from "@/db/schema";
 import { DrizzleInstance } from "@/store/useDrizzleStore";
-import {CreateQuiz, WholeQuiz} from "@/types/db";
-import { eq } from "drizzle-orm";
+import {CreateQuiz} from "@/types/db";
+import {eq, inArray} from "drizzle-orm";
 import { SQLiteDatabase } from "expo-sqlite";
 import {deleteFile} from "@/utils/download";
+import {questionResponseTable} from "@/db/play";
 
 export class QuizRepository {
     constructor(private drizzle : DrizzleInstance, private sqlite : SQLiteDatabase) {}
@@ -70,6 +71,21 @@ export class QuizRepository {
         })
 
         await this.sqlite.withTransactionAsync(async () => {
+            await this.drizzle.delete(questionResponseTable)
+                .where(inArray(questionResponseTable.questionId,
+                    this.drizzle.select({id: questionTable.id})
+                        .from(questionTable)
+                        .where(eq(questionTable.quizId, quizId))
+                ));
+            await this.drizzle.delete(playTable).where(eq(playTable.quizId, quizId));
+            await this.drizzle.delete(questionTable).where(eq(questionTable.quizId, quizId));
+            await this.drizzle.delete(questionOptionTable)
+                .where(inArray(questionOptionTable.questionId,
+                    this.drizzle.select({id: questionTable.id})
+                        .from(questionTable)
+                        .where(eq(questionTable.quizId, quizId))
+                ));
+
             await this.drizzle.delete(quizTable).where(eq(quizTable.id, quizId));
         });
 
