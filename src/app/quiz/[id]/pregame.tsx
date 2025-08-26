@@ -25,12 +25,12 @@ const PregameScreen = () => {
   }
 
   async function handleOnContinue() {
-      await playRepo.activatePlay(quizId);
+      const play = await playRepo.activatePlay(quizId);
       router.replace({
           pathname: '/quiz/[id]/play/[question]',
           params: {
               id: id as string,
-              question: 0,
+              question: play.responses.length,
           }
       });
   }

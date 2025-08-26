@@ -1,5 +1,6 @@
 import {playTable, quizTable} from "@/db/schema";
 import {questionOptionTable, questionTable} from "@/db/question";
+import {questionResponseTable} from "@/db/play";
 
 
 export type QuestionOptionInsert = typeof questionOptionTable.$inferInsert;
@@ -18,6 +19,8 @@ export type QuestionOption = typeof questionOptionTable.$inferSelect;
 export type WholeQuestion = Question & {options: QuestionOption[]};
 export type WholeQuiz = Quiz & {questions : WholeQuestion[]};
 
+export type QuestionResponse = typeof questionResponseTable.$inferSelect;
+
 export type Play = typeof playTable.$inferSelect;
-export type ActivePlay = Play & {quiz : Quiz}
+export type ActivePlay = Play & {quiz : Quiz, responses: QuestionResponse[]}
 

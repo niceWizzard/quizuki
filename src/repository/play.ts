@@ -1,5 +1,5 @@
-import { playTable } from "@/db/play";
-import { questionTable } from "@/db/question";
+import {playTable, questionResponseTable} from "@/db/play";
+import {questionTable, QuestionType} from "@/db/question";
 import { quizTable } from "@/db/quiz";
 import { DrizzleInstance } from "@/store/useDrizzleStore";
 import {asc, desc, eq} from "drizzle-orm";
@@ -23,12 +23,21 @@ export class PlayRepository {
             where: eq(playTable.quizId, quizId),
             with: {
                 quiz: true,
+                questionResponses: true,
             }
         })
-        if(!play || !play.quiz) {
-            throw new Error(`Play ${quizId} not found`);
-        }
-        this._activePlay = play as ActivePlay;
+        const quiz = play?.quiz;
+        if(!quiz || !play)
+            throw new Error("Quiz not found!")
+        const responses = play.questionResponses;
+        if(!responses)
+            throw new Error("Quiz responses not found!");
+        this._activePlay = {
+            ...play,
+            quiz,
+            responses,
+        };
+        return this._activePlay!;
     }
 
     public async createPlay(quizId : number) {
@@ -39,7 +48,7 @@ export class PlayRepository {
                     columns: {
                         id: true,
                     }
-                }
+                },
             }
         });
         if(!quizData)
@@ -56,12 +65,16 @@ export class PlayRepository {
             where: eq(playTable.quizId, quizId),
             with: {
                 quiz: true,
+                questionResponses: true,
             }
         })
         const quiz = play?.quiz;
         if(!quiz || !play)
             throw new Error("Quiz not found!")
-        this._activePlay = {...play, quiz};
+        const responses = play.questionResponses;
+        if(!responses)
+            throw new Error("Quiz responses not found!");
+        this._activePlay = {...play, quiz, responses: responses};
     }
 
 
@@ -91,5 +104,30 @@ export class PlayRepository {
         })
     }
 
+    public async setQuestionResponse({
+        questionId,
+        answerBlank,
+        isCorrect,
+        answerMultipleSelection,
+        answerMultipleChoice,
+    } :
+        {
+            questionId: number,
+            isCorrect: boolean,
+            answerBlank?: string,
+        answerMultipleChoice?: string,
+        answerMultipleSelection?: string[]
+}) {
+        await this.drizzle.insert(questionResponseTable).values({
+            playId: this._activePlay!.id,
+            questionId,
+            isCorrect,
+            answerBlank,
+            answerMultipleChoice,
+            answerMultipleSelection,
+        });
+
+        await this.activatePlay(this._activePlay!.quizId!);
+    }
 
 }
