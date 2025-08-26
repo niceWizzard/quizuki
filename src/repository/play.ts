@@ -2,7 +2,7 @@ import { playTable } from "@/db/play";
 import { questionTable } from "@/db/question";
 import { quizTable } from "@/db/quiz";
 import { DrizzleInstance } from "@/store/useDrizzleStore";
-import { eq } from "drizzle-orm";
+import {asc, desc, eq} from "drizzle-orm";
 import {ActivePlay} from "@/types/db";
 
 export class PlayRepository {
@@ -82,7 +82,14 @@ export class PlayRepository {
         }
     }
 
-
+    public getAllPlays() {
+        return this.drizzle.query.playTable.findMany({
+          orderBy: desc(playTable.updatedAt),
+            with: {
+              quiz: true,
+            }
+        })
+    }
 
 
 }
