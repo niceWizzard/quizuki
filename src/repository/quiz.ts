@@ -47,7 +47,11 @@ export class QuizRepository {
                         options: true
                     }
                 },
-                play: true,
+                play: {
+                    with: {
+                        questionResponses: true,
+                    }
+                },
             },
         });
     }

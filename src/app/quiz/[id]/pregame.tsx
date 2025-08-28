@@ -49,6 +49,10 @@ const PregameScreen = () => {
     </View>
   }
 
+  const hasPlay = quizInfo.play && (
+      quizInfo.play.questionResponses.length < quizInfo.questions.length
+  );
+
   return (
     <View style={{
         flex: 1,
@@ -57,7 +61,7 @@ const PregameScreen = () => {
     }}>
       <Text variant="bodyLarge">{quizInfo?.name}</Text>
         {
-            quizInfo.play ? (
+            hasPlay ? (
                 <View style={{gap: 16, marginTop: 32,}}>
                     <Text variant="bodySmall">Existing session has been detected.</Text>
                     <Button mode="contained-tonal" onPress={handleOnContinue}>Continue?</Button>
