@@ -81,7 +81,7 @@ function QuestionDisplay({
                     }
                 })
             }
-        }, 1000);
+        }, 1500);
     }
 
     const correctCount = activePlay.responses.filter(v => v.isCorrect).length;
