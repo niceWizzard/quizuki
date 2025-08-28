@@ -88,7 +88,7 @@ const PreviewScreen = () => {
     };
 
     function handleFabPress() {
-        router.replace({
+        router.navigate({
             pathname: '/quiz/[id]/pregame',
             params: {
                 id: id as string
