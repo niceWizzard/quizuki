@@ -29,6 +29,13 @@ export default function RootLayout() {
                     animation: 'fade_from_bottom',
                 }}
               />
+              <Stack.Screen
+                  name="quiz/[id]/play"
+                  options={{
+                      headerTitle: "",
+                      animation: 'fade_from_bottom',
+                  }}
+              />
           </Stack>
       </QueryClientProvider>
     </DrizzleProvider>
